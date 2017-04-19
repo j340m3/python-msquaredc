@@ -45,7 +45,7 @@ Overview
     :target: https://landscape.io/github/j340m3/python-msquaredc/master
     :alt: Code Quality Status
 
-.. |codacy| image:: https://img.shields.io/codacy/REPLACE_WITH_PROJECT_ID.svg
+.. |codacy| image:: https://api.codacy.com/project/badge/Grade/f13770dd85f2400e8e37f0b4ac0fb495
     :target: https://www.codacy.com/app/j340m3/python-msquaredc
     :alt: Codacy Code Quality Status
 
