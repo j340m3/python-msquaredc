@@ -1,5 +1,5 @@
 try:
-    from pycode.gui import core
+    from msquaredc.gui import core
     class TestMain(object):
         @classmethod
         def setup_class(cls):

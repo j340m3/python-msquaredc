@@ -1,5 +1,5 @@
 class Decorator:
-    def __new__(self,*args,**kwargs):
+    def __new__(self, *args, **kwargs):
         self.decoree = None
         self.newargs = args
         self.newkwargs = kwargs
@@ -7,7 +7,7 @@ class Decorator:
         if "decorators" in self.newkwargs:
             self.decorators = self.newargs["decorators"]
         if args:
-            if isinstance(args[0],type):
+            if isinstance(args[0], type):
                 self.decoree = args[0]
             if callable(args[0]):
                 if len(args) == 1 and len(kwargs) == 0:
@@ -16,7 +16,7 @@ class Decorator:
                 pass
         return self
 
-    def __init__(self,*args,**kwargs):
+    def __init__(self, *args, **kwargs):
         self.decoree = None
         self.initargs = args
         self.initkwargs = kwargs
@@ -26,24 +26,25 @@ class Decorator:
     def __call__(self, *args, **kwargs):
         if args and callable(args[0]):
             self.decoree = args[0]
-            if isinstance(self.decoree,type):
+            if isinstance(self.decoree, type):
                 return self.create_wrapping_class(self.decoree, self.decorators)
             return self.decoree
         elif self.decoree:
-            if isinstance(self.decoree,type):
-                return self.create_wrapping_class(args[0],self.decorators)(*args,**kwargs)
-            return self.decoree(*args,**kwargs)
+            if isinstance(self.decoree, type):
+                return self.create_wrapping_class(args[0], self.decorators)(*args, **kwargs)
+            return self.decoree(*args, **kwargs)
 
     @staticmethod
-    def create_wrapping_class(cls,decorators):
-        from future.utils import with_metaclass
+    def create_wrapping_class(cls, decorators):
+        from six import with_metaclass
+
         class MetaNewClass(type):
             def __repr__(self):
                 return repr(cls)
 
-        class NewClass(with_metaclass(MetaNewClass,cls)):
-            def __init__(self,*args,**kwargs):
-                self.__instance = cls(*args,**kwargs)
+        class NewClass(with_metaclass(MetaNewClass, cls)):
+            def __init__(self, *args, **kwargs):
+                self.__instance = cls(*args, **kwargs)
             "This is the overwritten class"
             def __getattribute__(self, attr_name):
                 if attr_name == "__class__":
@@ -58,9 +59,11 @@ class Decorator:
                             obj = decorator(obj)
                     return obj
                 return obj
+
             def __repr__(self):
                 return repr(self.__instance)
         return NewClass
+
 
 def lcs(a, b):
     lengths = [[0 for j in range(len(b)+1)] for i in range(len(a)+1)]

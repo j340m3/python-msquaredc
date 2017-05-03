@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-from msquaredc.gui.core import MainApplication
-import tkinter as tk
+
 import click
 
+
 @click.command()
-def main(args=None): #pragma no cover
+def main(args=None):  # pragma no cover
     """Console script for msquaredc"""
-    root = tk.Tk()
-    MainApplication(root).pack(side="top", fill="both", expand=True)
-    root.geometry("640x480")
-    root.mainloop()
+    gui = False
+    if gui:
+        from msquaredc.gui.main import main
+        main()
 
 
-if __name__ == "__main__": #pragma no cover
+if __name__ == "__main__":  # pragma no cover
     main()

@@ -1,10 +1,12 @@
+import os
+from itertools import repeat
+from itertools import takewhile
 from sys import version_info
 if version_info[0] == 2:
     from itertools import izip_longest as zip_longest
 elif version_info[0] == 3:
     from itertools import zip_longest
-from itertools import (takewhile,repeat)
-import os
+
 
 def obtain(filename):
     with open(filename, 'r') as file:
@@ -12,17 +14,18 @@ def obtain(filename):
         res = []
         for i, line in enumerate(file):
             if i == 0:
-                categories = list(map(str.strip,line.strip().split("\t")))
+                categories = list(map(str.strip, line.strip().split("\t")))
             else:
-                res.append(dict(zip_longest(categories, map(str.strip,line.split("\t")),fillvalue="")))
+                res.append(dict(zip_longest(categories, map(str.strip, line.split("\t")), fillvalue="")))
     return res
 
-def persist(filename,dict,mode="a",split="\t"):
+
+def persist(filename, dict, mode="a", split="\t"):
     order = None
     if filename in os.listdir(os.getcwd()):
         with open(filename) as file:
             order = file.readline().strip().split(split)
-    with open(filename,mode) as file:
+    with open(filename, mode) as file:
         if order is None:
             order = list(dict.keys())
             file.write(split.join(order))

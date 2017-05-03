@@ -1,6 +1,10 @@
-from pycode.persistence import obtain,persist,count
 import os
 import unittest
+from msquaredc.persistence import count
+from msquaredc.persistence import obtain
+from msquaredc.persistence import persist
+
+
 class TestPersistence(unittest.TestCase):
     def test_all(self):
         samples = [

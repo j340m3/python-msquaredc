@@ -1,7 +1,7 @@
 import unittest
 
-from pycode.utils import Decorator
-from pycode.utils import lcs
+from msquaredc.utils import Decorator
+from msquaredc.utils import lcs
 
 
 class TestDecorator(unittest.TestCase):

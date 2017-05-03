@@ -1,5 +1,5 @@
 try:
-    from pycode.gui import widgets
+    from msquaredc.gui import widgets
 
     class TestMain(object):
 

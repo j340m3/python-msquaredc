@@ -1,17 +1,21 @@
-import yaml,threading,os,time
-import shelve
+import os
+import threading
+import yaml
 
 MULTITHREADING = True
 lock = threading.Lock()
 
+
 class SingletonDecorator:
-    def __init__(self,klass):
+    def __init__(self, klass):
         self.klass = klass
         self.instance = None
-    def __call__(self,*args,**kwds):
-        if self.instance == None:
-            self.instance = self.klass(*args,**kwds)
+
+    def __call__(self, *args, **kwds):
+        if self.instance is None:
+            self.instance = self.klass(*args, **kwds)
         return self.instance
+
 
 def yaml_load(filename):
     try:
@@ -26,10 +30,11 @@ def yaml_load(filename):
         except FileNotFoundError:
             return None
 
-def yaml_write(content,filename):
+
+def yaml_write(content, filename):
     rename = True
     try:
-        os.rename(filename,filename+".old")
+        os.rename(filename, filename+".old")
     except FileNotFoundError:
         rename = False
     try:
@@ -37,11 +42,12 @@ def yaml_write(content,filename):
             yaml.dump(content, file)
     except IOError:
         if rename:
-            os.rename(filename+".old",filename)
+            os.rename(filename+".old", filename)
     else:
         if rename:
             os.remove(filename+".old")
     print("finished")
+
 
 @SingletonDecorator
 class PersistableStack(object):
@@ -58,20 +64,20 @@ class PersistableStack(object):
         else:
             self.values = []
 
-    def push(self,element):
+    def push(self, element):
         if not self.values:
             self.getValues()
         self.values.append(element)
-        self.persist(yaml_write,self.values,self.filename)
+        self.persist(yaml_write, self.values, self.filename)
 
     def pop(self):
         if not self.values:
             self.getValues()
         res = self.values.pop()
-        self.persist(yaml_write,self.values,self.filename)
+        self.persist(yaml_write, self.values, self.filename)
         return res
 
-    def persist(self,func,*args):
+    def persist(self, func, *args):
         if self.multithreading:
             with lock:
                 self.thread = threading.Thread(target=func, args=args)
@@ -83,9 +89,3 @@ class PersistableStack(object):
     @property
     def count(self):
         return len(self.values)
-
-
-if __name__ == "__main__":
-    s = PersistableStack("bla")
-    s.pop()
-    print(s.values)
