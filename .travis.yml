@@ -34,17 +34,10 @@ matrix:
     - python: '3.5'
       env:
         - TOXENV=3.5-nocov
-    - python: 'pypy-5.4'
-      env:
-        - TOXENV=pypy-cover,report,coveralls,codecov
-    - python: 'pypy-5.4'
-      env:
-        - TOXENV=pypy-nocov
 before_install:
   - python --version
   - uname -a
   - lsb_release -a
-  - sudo apt-get install tk-dev python-tk tcl-dev
 install:
   - pip install tox
   - virtualenv --version
