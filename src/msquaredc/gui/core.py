@@ -16,7 +16,7 @@ elif version_info[0] == 3:
     from tkinter import filedialog
 
 
-class MainFrame:  # pragma no cover
+class MainFrame(object):  # pragma no cover
     def __init__(self, widgets):
         self.widgets = widgets
         self.tk = tk.Tk()
@@ -102,7 +102,7 @@ class MainFrame:  # pragma no cover
         self.tk.mainloop()
 
 
-class MainApplication(tk.Frame):
+class MainApplication(tk.Frame):  # pragma no cover
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
@@ -137,7 +137,7 @@ class MainApplication(tk.Frame):
         self.statusbar.variable.set(string)
 
 
-class StatusBar(tk.Frame):
+class StatusBar(tk.Frame):  # pragma no cover
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         self.variable = tk.StringVar()
@@ -148,7 +148,7 @@ class StatusBar(tk.Frame):
         self.label.pack(fill=tk.X)
 
 
-class NavBar(tk.Frame):
+class NavBar(tk.Frame):  # pragma no cover
     def __init__(self, master):
 
         tk.Frame.__init__(self, master)
@@ -158,7 +158,7 @@ class NavBar(tk.Frame):
         self.next.grid(column=1, row=0, in_=self, padx=5, pady=5)
 
 
-class ToolBar(tk.Menu):
+class ToolBar(tk.Menu):  # pragma no cover
     def __init__(self, master, handler):
         tk.Menu.__init__(self, master)
         master.config(menu=self)
@@ -174,7 +174,7 @@ class ToolBar(tk.Menu):
         self.add_cascade(label="File", underline=0, menu=fileMenu)
 
 
-class Main(tk.Frame):
+class Main(tk.Frame):  # pragma no cover
     def __init__(self, master, paper, data):
         tk.Frame.__init__(self, master)
         master.add_callback("next", lambda: Main.get_next(self))
@@ -265,7 +265,7 @@ class Main(tk.Frame):
             self.widgetfield.grid(row=1)
 
 
-class InfoField(tk.Frame):
+class InfoField(tk.Frame):  # pragma no cover
     def __init__(self, master):
         font = ("serif", 16)
         tk.Frame.__init__(self, master)
@@ -324,7 +324,7 @@ class InfoField(tk.Frame):
         self.__lengthvar.set(value)
 
 
-class WidgetField(tk.Frame):
+class WidgetField(tk.Frame):  # pragma no cover
     def __init__(self, master, criterias):
         tk.Frame.__init__(self, master)
         self.criterias = criterias
@@ -344,10 +344,3 @@ class WidgetField(tk.Frame):
 
     def get_res_dict(self):
         return {element.label.cget('text'): element.variables[0].get() for element in self.widgets}
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    MainApplication(root).pack(side="top", fill="both", expand=True)
-    root.geometry("640x480")
-    root.mainloop()
