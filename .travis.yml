@@ -44,7 +44,7 @@ before_install:
   - python --version
   - uname -a
   - lsb_release -a
-  - sudo apt-get install python-tk
+  - sudo apt-get install tk-dev
 install:
   - pip install tox
   - virtualenv --version
