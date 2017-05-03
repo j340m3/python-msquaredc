@@ -7,7 +7,7 @@ elif version_info[0] == 3:
     import tkinter as tk
 
 
-class Paper(tk.Frame):
+class Paper(tk.Frame):  # pragma : no cover
     def __init__(self, master, coding, data):
         super(Paper, self).__init__(master)
 
