@@ -9,9 +9,9 @@ elif version_info[0] == 3:
     from tkinter import filedialog as fdg
 
 
-def NameDialog():
+def NameDialog():  # pragma : no cover
     return sdg.askstring("Name dialog", "Please insert Name:")
 
 
-def FileDialog():
+def FileDialog():  # pragma : no cover
     return fdg.askopenfilename()
