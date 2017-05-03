@@ -35,7 +35,7 @@ Overview
 
 .. |coveralls| image:: https://coveralls.io/repos/j340m3/python-msquaredc/badge.svg?branch=master&service=github
     :alt: Coverage Status
-    :target: https://coveralls.io/r/j340m3/python-msquaredc
+    :target: https://coveralls.io/github/j340m3/python-msquaredc
 
 .. |codecov| image:: https://codecov.io/github/j340m3/python-msquaredc/coverage.svg?branch=master
     :alt: Coverage Status
