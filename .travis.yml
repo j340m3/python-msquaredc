@@ -34,6 +34,18 @@ matrix:
     - python: '3.5'
       env:
         - TOXENV=3.5-nocov
+    - python: '3.6'
+      env:
+        - TOXENV=3.6-cover,report,coveralls,codecov
+    - python: '3.6'
+      env:
+        - TOXENV=3.6-nocov
+    - python: 'nightly'
+      env:
+        - TOXENV=nightly-cover,report,coveralls,codecov
+    - python: 'nightly'
+      env:
+        - TOXENV=nightly-nocov
 before_install:
   - python --version
   - uname -a
