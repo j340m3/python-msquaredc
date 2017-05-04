@@ -15,7 +15,7 @@ Overview
         | |landscape| |scrutinizer| |codacy| |codeclimate|
     * - package
       - | |version| |wheel| |supportedversions| |supportedimplementations|
-        | |commitssince| |waffle|
+        | |waffle| |commitssince| 
 
 .. |docs| image:: https://readthedocs.org/projects/python-msquaredc/badge/?style=flat
     :target: https://readthedocs.org/projects/python-msquaredc
@@ -62,8 +62,8 @@ Overview
     :target: https://github.com/j340m3/python-msquaredc/compare/v0.1.0...master
 
 .. |waffle| image:: https://badge.waffle.io/j340m3/python-msquaredc.png?label=ready&title=Ready
-:target: https://waffle.io/j340m3/python-msquaredc
     :alt: 'Stories in Ready'
+    :target: https://waffle.io/j340m3/python-msquaredc
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/msquaredc.svg
     :alt: PyPI Wheel
