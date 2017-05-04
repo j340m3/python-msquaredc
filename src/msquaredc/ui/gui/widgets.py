@@ -7,12 +7,12 @@ elif version_info[0] == 3:
     import tkinter as tk
 
 
-class MyWidget:  # pragma : no cove
+class MyWidget:  # pragma : no cover
     def __init__(self, label):
         self.label = label
 
 
-class TrueFalseWidget(MyWidget):  # pragma : no cove
+class TrueFalseWidget(MyWidget):  # pragma : no cover
     def __init__(self, label):
         super(TrueFalseWidget, self).__init__(label)
         self.widget = None
@@ -25,7 +25,7 @@ class TrueFalseWidget(MyWidget):  # pragma : no cove
         self.labelw.grid(column=2, row=line, sticky=tk.NSEW)
 
 
-class ScaleWidget(tk.Frame):  # pragma : no cove
+class ScaleWidget(tk.Frame):  # pragma : no cover
     def __init__(self, master, label, min_, max_, redundancy=0):
         super(ScaleWidget, self).__init__(master)
         self.min = min_

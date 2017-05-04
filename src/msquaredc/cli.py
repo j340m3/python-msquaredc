@@ -20,4 +20,15 @@ import click
 @click.command()
 @click.argument('names', nargs=-1)
 def main(names):
+    """Console script for msquaredc"""
+    gui = False
+    if gui:
+        from msquaredc.ui.gui.main import main
+    else:
+        from msquaredc.tui.main import main
+    main()
     click.echo(repr(names))
+
+
+if __name__ == "__main__":  # pragma no cover
+    main()

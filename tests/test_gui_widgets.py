@@ -1,5 +1,6 @@
 try:
-    from msquaredc.gui import widgets
+    from msquaredc.ui.gui import widgets
+
 
     class TestMain(object):
 

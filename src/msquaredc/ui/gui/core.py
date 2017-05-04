@@ -1,10 +1,12 @@
 import logging
 import os
 from sys import version_info
+
 import yaml
+
 from msquaredc import persistence
 from msquaredc import utils
-from msquaredc.gui.widgets import ScaleWidget
+from msquaredc.ui.gui.widgets import ScaleWidget
 
 if version_info[0] == 2:
     # We are using Python 2.x

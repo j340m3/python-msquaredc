@@ -1,5 +1,5 @@
 try:
-    from msquaredc.gui import core
+    from msquaredc.ui.gui import core
     class TestMain(object):
         @classmethod
         def setup_class(cls):

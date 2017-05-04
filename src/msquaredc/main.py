@@ -1,7 +1,7 @@
 from msquaredc.gui.core import MainFrame
 from msquaredc.gui.dialogs import NameDialog
-from msquaredc.gui.widgets import TrueFalseWidget
 
+from msquaredc.ui.gui.widgets import TrueFalseWidget
 
 if __name__ == "__main__":
     widgets = [TrueFalseWidget("Has the question been answered?"),

@@ -1,5 +1,6 @@
 from sys import version_info
-from msquaredc.gui.core import MainApplication
+
+from msquaredc.ui.gui import MainApplication
 
 if version_info[0] == 2:
     # We are using Python 2.x
