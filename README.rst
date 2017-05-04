@@ -15,7 +15,7 @@ Overview
         | |landscape| |scrutinizer| |codacy| |codeclimate|
     * - package
       - | |version| |wheel| |supportedversions| |supportedimplementations|
-        | |waffle| |commitssince| 
+        | |waffle| |commitssince|
 
 .. |docs| image:: https://readthedocs.org/projects/python-msquaredc/badge/?style=flat
     :target: https://readthedocs.org/projects/python-msquaredc
