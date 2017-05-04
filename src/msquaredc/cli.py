@@ -25,7 +25,7 @@ def main(names):
     if gui:
         from msquaredc.ui.gui.main import main
     else:
-        from msquaredc.tui.main import main
+        from msquaredc.ui.tui.main import main
     main()
     click.echo(repr(names))
 

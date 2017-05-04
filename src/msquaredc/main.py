@@ -1,5 +1,5 @@
-from msquaredc.gui.core import MainFrame
-from msquaredc.gui.dialogs import NameDialog
+from msquaredc.ui.gui.core import MainFrame
+from msquaredc.ui.gui.dialogs import NameDialog
 
 from msquaredc.ui.gui.widgets import TrueFalseWidget
 
