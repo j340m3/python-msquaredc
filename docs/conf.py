@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 import os
 
-
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
@@ -22,7 +21,7 @@ if os.getenv('SPELLCHECK'):
 
 source_suffix = '.rst'
 master_doc = 'index'
-project = 'M²C'
+project = 'MsquaredC'
 year = '2017'
 author = 'Jerome Bergmann'
 copyright = '{0}, {1}'.format(year, author)
