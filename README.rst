@@ -14,8 +14,8 @@ Overview
         | |coveralls| |codecov|
         | |landscape| |scrutinizer| |codacy| |codeclimate|
     * - package
-      - | |version| |wheel| |supported-versions| |supported-implementations|
-        | |commits-since|
+      - | |version| |wheel| |supportedversions| |supportedimplementations|
+        | |commitssince| |waffle|
 
 .. |docs| image:: https://readthedocs.org/projects/python-msquaredc/badge/?style=flat
     :target: https://readthedocs.org/projects/python-msquaredc
@@ -57,19 +57,23 @@ Overview
     :alt: PyPI Package latest release
     :target: https://pypi.python.org/pypi/msquaredc
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/j340m3/python-msquaredc/v0.1.0.svg
+.. |commitssince| image:: https://img.shields.io/github/commits-since/j340m3/python-msquaredc/v0.1.0.svg
     :alt: Commits since latest release
     :target: https://github.com/j340m3/python-msquaredc/compare/v0.1.0...master
+
+.. |waffle| image:: https://badge.waffle.io/j340m3/python-msquaredc.png?label=ready&title=Ready
+:target: https://waffle.io/j340m3/python-msquaredc
+    :alt: 'Stories in Ready'
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/msquaredc.svg
     :alt: PyPI Wheel
     :target: https://pypi.python.org/pypi/msquaredc
 
-.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/msquaredc.svg
+.. |supportedversions| image:: https://img.shields.io/pypi/pyversions/msquaredc.svg
     :alt: Supported versions
     :target: https://pypi.python.org/pypi/msquaredc
 
-.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/msquaredc.svg
+.. |supportedimplementations| image:: https://img.shields.io/pypi/implementation/msquaredc.svg
     :alt: Supported implementations
     :target: https://pypi.python.org/pypi/msquaredc
 
