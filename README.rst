@@ -127,3 +127,11 @@ Note, to combine the coverage data from all the tox environments run:
       - ::
 
             PYTEST_ADDOPTS=--cov-append tox
+            
+Donation
+========
+Please consider to support me:
+
+.. image:: http://www.wenspencer.com/wp-content/uploads/2017/02/patreon-button.png
+    :alt: Become a patron
+    :target: https://patreon.com/j340m3
