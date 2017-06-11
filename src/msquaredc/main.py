@@ -3,6 +3,10 @@ from msquaredc.ui.gui.dialogs import NameDialog
 
 from msquaredc.ui.gui.widgets import TrueFalseWidget
 
+
+def main(*args, **kwargs):
+
+
 if __name__ == "__main__":
     widgets = [TrueFalseWidget("Has the question been answered?"),
                TrueFalseWidget("Is the answer correct?"), ]

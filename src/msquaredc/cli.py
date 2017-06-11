@@ -14,20 +14,37 @@ Why does this file exist, and why not put this in __main__?
 
   Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
 """
+import logging
+
 import click
+
+from msquaredc.project import Project
+from msquaredc.ui.interfaces import PresenterInterface
 
 
 @click.command()
-@click.argument('names', nargs=-1)
-def main(names):
+@click.option('--project-file', default="", help="Location of the project file")
+@click.option("--user-interface", default="tui", help="User interface to start. [tui|gui|web]")
+def main(project_file, user_interface):
     """Console script for msquaredc"""
-    gui = False
-    if gui:
-        from msquaredc.ui.gui.main import main
+    logging.basicConfig(level=logging.DEBUG)
+    presenter = PresenterInterface()
+    if user_interface == "gui":
+        from msquaredc.ui.gui.presenter import Presenter
+        presenter = Presenter()
+    elif user_interface == "tui":
+        from msquaredc.ui.tui.presenter import Presenter
+        presenter = Presenter()
+    elif user_interface == "web":
+        print("NotSupportedYet")
+    if project_file == None:
+        project = presenter.new_project_wizard()
     else:
-        from msquaredc.ui.tui.main import main
-    main()
-    click.echo(repr(names))
+        try:
+            project = Project(path=project_file)
+        except FileNotFoundError:
+            project = presenter.new_project_wizard(path=project_file)
+    presenter.load_mainframe(project)
 
 
 if __name__ == "__main__":  # pragma no cover
