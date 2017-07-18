@@ -1,5 +1,12 @@
-from msquaredc.ui.interfaces import PresenterInterface
+from msquaredc.ui.interfaces import AbstractPresenter
 
 
-class Presenter(PresenterInterface):
-    pass
+class TUIAbstractPresenter(AbstractPresenter):
+    def __init__(self, *args, **kwargs):
+        super(TUIAbstractPresenter, self).__init__(__class__.__name__, *args, **kwargs)
+
+    def new_project_wizard(self, path=None):
+        self.logger.info("Creating a new Project.")
+
+    def load_mainframe(self, *args, **kwargs):
+        self.logger.info("Loading Mainframe.")

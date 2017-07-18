@@ -67,7 +67,8 @@ setup(
     ],
     install_requires=[
         'click',
-        'PyYAML'
+        'PyYAML',
+        'urwid'
     ],
     extras_require={
         # eg:

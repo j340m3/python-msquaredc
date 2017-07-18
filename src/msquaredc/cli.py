@@ -19,25 +19,27 @@ import logging
 import click
 
 from msquaredc.project import Project
-from msquaredc.ui.interfaces import PresenterInterface
+from msquaredc.ui.interfaces import AbstractPresenter
 
 
 @click.command()
 @click.option('--project-file', default="", help="Location of the project file")
-@click.option("--user-interface", default="tui", help="User interface to start. [tui|gui|web]")
+@click.option("--user-interface", default="gui", help="User interface to start. [tui|gui|web]")
 def main(project_file, user_interface):
     """Console script for msquaredc"""
-    logging.basicConfig(level=logging.DEBUG)
-    presenter = PresenterInterface()
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
     if user_interface == "gui":
-        from msquaredc.ui.gui.presenter import Presenter
-        presenter = Presenter()
+        from msquaredc.ui.gui.presenter import GUIPresenter, GUIMenu
+        presenter = GUIPresenter(menuclass=GUIMenu)
     elif user_interface == "tui":
-        from msquaredc.ui.tui.presenter import Presenter
-        presenter = Presenter()
+        from msquaredc.ui.tui.presenter import TUIPresenter, TUIMenu
+        presenter = TUIPresenter(menuclass=TUIMenu)
     elif user_interface == "web":
         print("NotSupportedYet")
-    if project_file == None:
+    else:
+        presenter = AbstractPresenter()
+    if project_file is None:
         project = presenter.new_project_wizard()
     else:
         try:
@@ -45,6 +47,8 @@ def main(project_file, user_interface):
         except FileNotFoundError:
             project = presenter.new_project_wizard(path=project_file)
     presenter.load_mainframe(project)
+    presenter.run()
+
 
 
 if __name__ == "__main__":  # pragma no cover
