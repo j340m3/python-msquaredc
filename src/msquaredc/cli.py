@@ -18,8 +18,10 @@ import logging
 
 import click
 
-from msquaredc.project import Project,FileNotFoundError
-from msquaredc.ui.interfaces import AbstractPresenter, AbstractMenu
+from msquaredc.project import FileNotFoundError
+from msquaredc.project import Project
+from msquaredc.ui.interfaces import AbstractMenu
+from msquaredc.ui.interfaces import AbstractPresenter
 
 
 @click.command()

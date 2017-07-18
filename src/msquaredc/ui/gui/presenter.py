@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
 from sys import version_info
+from msquaredc.ui.interfaces import AbstractPresenter
 
 if version_info[0] == 2:
     # We are using Python 2.x
     import Tkinter as tk
     import ttk
-    import tkFileDialog as filedialog
+
 elif version_info[0] == 3:
     # We are using Python 3.x
     import tkinter as tk
     from tkinter import ttk
-    from tkinter import filedialog
-
-from msquaredc.ui.interfaces import AbstractPresenter
-from msquaredc.ui.gui.menu import GUIMenu
 
 
 class GUIPresenter(AbstractPresenter):

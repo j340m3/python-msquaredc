@@ -3,7 +3,7 @@ from msquaredc.ui.interfaces import AbstractPresenter
 
 class TUIAbstractPresenter(AbstractPresenter):
     def __init__(self, *args, **kwargs):
-        super(TUIAbstractPresenter, self).__init__(__class__.__name__, *args, **kwargs)
+        super(TUIAbstractPresenter, self).__init__(__name__, *args, **kwargs)
 
     def new_project_wizard(self, path=None):
         self.logger.info("Creating a new Project.")

@@ -91,3 +91,7 @@ class AbstractPresenter:
     def show_settings(self, *args, **kwargs):
         self.logger.log(logging.ERROR,
                         "Tried to show the settings pane from the Interface, probably the child class hasn't implemented it yet!")
+
+    def run(self):
+        self.logger.log(logging.ERROR,
+                        "Tried to run the User Interface from the Interface, probably the child class hasn't implemented it yet!")

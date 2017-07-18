@@ -5,11 +5,9 @@ from msquaredc.ui.interfaces import AbstractMenu
 if version_info[0] == 2:
     # We are using Python 2.x
     import Tkinter as tk
-    import tkFileDialog as filedialog
 elif version_info[0] == 3:
     # We are using Python 3.x
     import tkinter as tk
-    from tkinter import filedialog
 
 
 class GUIMenu(AbstractMenu):
