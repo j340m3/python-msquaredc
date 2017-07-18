@@ -43,11 +43,11 @@ class AbstractLabel:
 class AbstractPresenter:
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, *args, name=None, menuclass=AbstractMenu, **kwargs):
+    def __init__(self, name=None, menuclass=AbstractMenu, *args, **kwargs):
         if name:
             self.logger = logging.getLogger(name)
         else:
-            self.logger = logging.getLogger(__class__.__name__)
+            self.logger = logging.getLogger(__name__)
 
         self._menuclass = menuclass
         self.labels = {}

@@ -18,8 +18,8 @@ import logging
 
 import click
 
-from msquaredc.project import Project
-from msquaredc.ui.interfaces import AbstractPresenter
+from msquaredc.project import Project,FileNotFoundError
+from msquaredc.ui.interfaces import AbstractPresenter, AbstractMenu
 
 
 @click.command()
@@ -28,7 +28,7 @@ from msquaredc.ui.interfaces import AbstractPresenter
 def main(project_file, user_interface):
     """Console script for msquaredc"""
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-
+    presenter = AbstractPresenter(menuclass=AbstractMenu)
     if user_interface == "gui":
         from msquaredc.ui.gui.presenter import GUIPresenter, GUIMenu
         presenter = GUIPresenter(menuclass=GUIMenu)
@@ -48,7 +48,6 @@ def main(project_file, user_interface):
             project = presenter.new_project_wizard(path=project_file)
     presenter.load_mainframe(project)
     presenter.run()
-
 
 
 if __name__ == "__main__":  # pragma no cover

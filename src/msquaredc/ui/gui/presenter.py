@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from sys import version_info
 
 if version_info[0] == 2:
@@ -18,7 +19,7 @@ from msquaredc.ui.gui.menu import GUIMenu
 class GUIPresenter(AbstractPresenter):
     def __init__(self, *args, **kwargs):
         self.tk = tk.Tk()
-        super(GUIPresenter, self).__init__(name=__class__.__name__, *args, **kwargs)
+        super(GUIPresenter, self).__init__(name=__name__, *args, **kwargs)
         self.logger.info("Building the GUI presenter.")
         self.init_tk()
         self.logger.info("The GUI presenter has been build.")

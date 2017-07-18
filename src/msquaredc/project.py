@@ -2,9 +2,10 @@ from zipfile import ZipFile
 
 
 class Project(object):
-    def __init__(self, *args, path=None, stack=None):
+    def __init__(self, path=None, stack=None,*args):
+
         # Project already exists
-        if path is None:
+        if path is None or len(path) == 0:
             raise FileNotFoundError
         else:
             with ZipFile(path) as project_folder:
@@ -12,3 +13,7 @@ class Project(object):
                     pass
         self.path = path
         self.stack = stack
+
+
+class FileNotFoundError(IOError):
+    pass
