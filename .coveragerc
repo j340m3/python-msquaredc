@@ -3,12 +3,19 @@ source = src
 
 [run]
 branch = true
+omit =
+    src/msquaredc/ui/gui/*
+    src/msquaredc/ui/tui/*
+
 source =
-    src
-    tests
+    src/msquaredc
+
 parallel = true
 
 [report]
 show_missing = true
 precision = 2
-omit = *migrations*
+omit =
+    *migrations*
+    src/msquaredc/ui/gui/*
+    src/msquaredc/ui/tui/*
