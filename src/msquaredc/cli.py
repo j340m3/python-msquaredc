@@ -32,10 +32,12 @@ def main(project_file, user_interface):
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
     presenter = AbstractPresenter(menuclass=AbstractMenu)
     if user_interface == "gui":
-        from msquaredc.ui.gui.presenter import GUIPresenter, GUIMenu
+        from msquaredc.ui.gui.presenter import GUIPresenter
+        from msquaredc.ui.gui.menu import GUIMenu
         presenter = GUIPresenter(menuclass=GUIMenu)
     elif user_interface == "tui":
-        from msquaredc.ui.tui.presenter import TUIPresenter, TUIMenu
+        from msquaredc.ui.tui.presenter import TUIPresenter
+        from msquaredc.ui.tui.menu import TUIMenu
         presenter = TUIPresenter(menuclass=TUIMenu)
     elif user_interface == "web":
         print("NotSupportedYet")

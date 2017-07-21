@@ -53,13 +53,14 @@ class AbstractPresenter:
         self.labels = {}
 
         # Init Menu
-        self.menu = menuclass(self, _("File"))
-        submenu = menuclass(self.menu, _("Title1"))
-        submenu.addEntry("Entry", None)
+        self.menu = menuclass(self, _("Main Menu"))
+        submenu = menuclass(self.menu, _("File"))
+        submenu.addEntry("New", None)
+        submenu.addEntry("Open", None)
+        submenu.addEntry("Exit", None)
         self.menu.addSubmenu(submenu)
-        submenu2 = menuclass(self.menu, "Title2")
-        submenu2.addEntry("Entry2", None)
-        submenu2.addEntry("Entry3", None)
+        submenu2 = menuclass(self.menu, "Edit")
+        submenu2.addEntry("Settings", None)
         self.menu.addSubmenu(submenu2)
 
     def add_label(self, key, callable_f):
