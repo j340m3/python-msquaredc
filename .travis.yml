@@ -67,4 +67,4 @@ deploy:
   on:
     condition: "$TOXENV == 2.7-nocov"
     repo: j340m3/python-msquaredc
-  distributions: sdist
+  distributions: "sdist bdist_wheel"
