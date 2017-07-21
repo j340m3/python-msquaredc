@@ -25,11 +25,14 @@ from msquaredc.ui.interfaces import AbstractPresenter
 
 
 @click.command()
-@click.option('--project-file', default="", help="Location of the project file")
-@click.option("--user-interface", default="gui", help="User interface to start. [tui|gui|web]")
-def main(project_file, user_interface):
-    """Console script for msquaredc"""
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+@click.option('--project-file', default="", help="Location of the project file.")
+@click.option("--user-interface", default="gui", help="User interface to start. [tui | gui | web]")
+@click.option("--loglevel", default="warning", help="On which level to log. [debug | info | warning | error | critical]")
+@click.option("--logfile", default="logfile.log", help="Where to log.")
+def main(project_file, user_interface, loglevel, logfile):
+    """Command line interface to msquaredc."""
+    setup_logging(loglevel,logfile)
+
     presenter = AbstractPresenter(menuclass=AbstractMenu)
     if user_interface == "gui":
         from msquaredc.ui.gui.presenter import GUIPresenter
@@ -53,6 +56,22 @@ def main(project_file, user_interface):
     presenter.load_mainframe(project)
     presenter.run()
 
+def setup_logging(loglevel,logfile):
+    translated = {"debug": logging.DEBUG,
+                  "info": logging.INFO,
+                  "warning": logging.WARNING,
+                  "error": logging.ERROR,
+                  "critical": logging.CRITICAL}
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(name)-30s %(levelname)-8s %(message)s',
+                        datefmt='%Y-%d-%m %H:%M:%S',
+                        filename=logfile,
+                        filemode="a")
+    console = logging.StreamHandler()
+    console.setLevel(translated.get(loglevel, logging.WARNING))
+    formatter = logging.Formatter('%(name)-30s %(levelname)-8s %(message)s')
+    console.setFormatter(formatter)
+    logging.getLogger("").addHandler(console)
 
 if __name__ == "__main__":  # pragma no cover
     main()

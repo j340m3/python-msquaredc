@@ -16,18 +16,19 @@ class AbstractMenu:
         if logger:
             self.logger = logging.getLogger(logger)
         else:
-            self.logger = logging.getLogger("Menu")
+            self.logger = logging.getLogger(__name__)
         self.name = name
         self.main = main
         self.entries = []
 
     def addEntry(self, entry, handle, *args, **kwargs):
         self.entries.append((entry, handle))
-        self.logger.info("Adding Entry {} to menu {} ".format(entry, self.name))
+        print("Entry:{}, Handle:{}, Self.Name:{}".format(entry,handle,self.name))
+        self.logger.debug("Adding Entry {} to menu {} ".format(entry, self.name))
 
     def addSubmenu(self, menu, *args, **kwargs):
         self.entries.append((menu.name, menu.entries))
-        self.logger.info("Adding Submenu {} to menu {} ".format(menu.name, self.name))
+        self.logger.debug("Adding Submenu {} to menu {} ".format(menu.name, self.name))
 
     def getLabel(self):
         pass
@@ -53,13 +54,13 @@ class AbstractPresenter:
         self.labels = {}
 
         # Init Menu
-        self.menu = menuclass(self, _("Main Menu"))
-        submenu = menuclass(self.menu, _("File"))
+        self.menu = menuclass(_("Main Menu"), self)
+        submenu = menuclass( _("File"),self.menu)
         submenu.addEntry("New", None)
         submenu.addEntry("Open", None)
         submenu.addEntry("Exit", None)
         self.menu.addSubmenu(submenu)
-        submenu2 = menuclass(self.menu, "Edit")
+        submenu2 = menuclass( "Edit",self.menu)
         submenu2.addEntry("Settings", None)
         self.menu.addSubmenu(submenu2)
 

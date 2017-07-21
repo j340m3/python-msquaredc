@@ -9,10 +9,10 @@ elif version_info[0] == 3:
 
 
 def obtain(filename):
-    with open(filename, 'r') as file:
+    with open(filename, 'r') as file_:
         categories = []
         res = []
-        for i, line in enumerate(file):
+        for i, line in enumerate(file_):
             if i == 0:
                 categories = list(map(str.strip, line.strip().split("\t")))
             else:
@@ -20,18 +20,18 @@ def obtain(filename):
     return res
 
 
-def persist(filename, dict, mode="a", split="\t"):
+def persist(filename, dict_, mode="a", split="\t"):
     order = None
     if filename in os.listdir(os.getcwd()):
-        with open(filename) as file:
-            order = file.readline().strip().split(split)
-    with open(filename, mode) as file:
+        with open(filename) as file_:
+            order = file_.readline().strip().split(split)
+    with open(filename, mode) as file_:
         if order is None:
-            order = list(dict.keys())
-            file.write(split.join(order))
-            file.write("\n")
-        file.write(split.join([str(dict[i]) for i in order]))
-        file.write("\n")
+            order = list(dict_.keys())
+            file_.write(split.join(order))
+            file_.write("\n")
+        file_.write(split.join([str(dict_[i]) for i in order]))
+        file_.write("\n")
 
 
 def count(filename):

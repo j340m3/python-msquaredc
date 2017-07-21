@@ -16,6 +16,7 @@ elif version_info[0] == 3:
 class GUIPresenter(AbstractPresenter):
     def __init__(self, *args, **kwargs):
         self.tk = tk.Tk()
+        self.parent = None
         super(GUIPresenter, self).__init__(name=__name__, *args, **kwargs)
         self.logger.info("Building the GUI presenter.")
         self.init_tk()
@@ -56,4 +57,10 @@ class GUIPresenter(AbstractPresenter):
         self.logger.info("Loading Mainframe.")
 
     def run(self):
-        self.tk.mainloop()
+        self.logger.debug("Starting GUI")
+        try:
+            self.tk.mainloop()
+        except Exception as e:
+            self.logger.critical("Unhandled Error:{}".format(str(e)))
+        else:
+            self.logger.debug("Leaving GUI normally.")
