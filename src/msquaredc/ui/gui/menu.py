@@ -17,7 +17,7 @@ class GUIMenu(AbstractMenu):
         self.root = parent
         while self.root.parent is not None:
             self.root = self.root.parent
-        self.tk = self.parent.tk
+        self.tk = self.parentp.tk
         super(GUIMenu, self).__init__(self.parent, name)
 
         if not isinstance(self.parent, GUIMenu):
