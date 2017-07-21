@@ -31,7 +31,7 @@ except Exception:
 
 setup(
     name='msquaredc',
-    version='0.1.0{}'.format(buildnr),
+    version='0.1.1{}'.format(buildnr),
     license='BSD',
     description='An example package. Generated with cookiecutter-pylibrary.',
     long_description='%s\n%s' % (

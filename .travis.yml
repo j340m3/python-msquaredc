@@ -67,6 +67,8 @@ deploy:
     condition: $TOXENV == 2.7-nocov
     repo: j340m3/python-msquaredc
   provider: pypi
+  edge:
+    branch: twine-user-install
   user: "j340m3"
   password:
     - secure: "UP0uPm5Mq0hGSQzpgvFbuK/IeLZWKJpLC0X626lw/Jc+y5Nmtom7IiQe1pLa+wb1nv/oVfzNiG4hpA69sc6+VPz8QhCPEAArta/83o0R6Zyk8MJsK+jbjmLBJM5eUZWYJOoSafiEeBitn6RH/biBqgDrBMMl2iA/X/e3GbEofM7+veCH7N87W/OsYwKF9RKekAZJ1DEjUymRLdUp6CnuBrfaxH+H5Un+gkcUV0IZPiwZ8quVvpIRmMbu+QDulykRIoAMIjt/STtTrLf8JpqMnsl9m66nMhhd8XgBbmEuOBxXExdKz5ovGtvNtcHzv0iqrK0f1bMtqkXvQTQoEAQnYn4M0h8GbW2ORl8npJEFJUqvfrj9Dz4kW/wi9XOCemP+xy+aXmDgtRXkZc+Dknhjb9e/ZTvSmpT0inf/dmOtOgmksb3R4R+27cqDrJD4S4BlU0T0AvhOOt16sKhMqdH1bdiXrFAo7xkSTjN/dV7SI+dQaLAwibRF21JYe0bSzLK2bfHlPivNrmtDNEb3Y/krsExgy2Ue2uML0KA/s2oEgL8p6dv66EYuTb4rOodu5T6hQVFE1vNzqDHVFGp8zTn1TWrMF4vCedc5hboj63ve1kenhJ6ZOz6ex7GIvFLuBPTx2R8okVxrWUasczrkYYvAVhza7bnmKbuACVHz2YnaZyI="
