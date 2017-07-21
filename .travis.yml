@@ -5,6 +5,7 @@ env:
   global:
   - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
   - SEGFAULT_SIGNALS=all
+  - secure: c5UxgaRpVfZqwOygoWd5xVl1K6KEMDeqmSyIXXGJBQXTYUslblGZBCRfnmmAC2lrFo2xqk6XW1zQvUEO4nT2FzWF+OOx1b78uCxjxG2sXbkrC32kGOCyP3hr/D+6a85oKDIiaDbgUJJGUw9YiXUgo2pZpiadGDL1reFSRI+4g52QnO0JbBDtx38MdKmxmq2ZsHo/PihhdSj3OM6DKtYpiRHCcnWd3HTYpnzsTCxNPEZ6KRF8hCYoqXIrIQCey+drEcwafXScODwvkSvhwOHPOdnLM/Oy7dqhR8RK4O/hZbH467DN6YSZm+QPwKBVvS1op0QFYVgTvNkp3EGfZbb+XMNvzViGIhebgJ5h+LkJTOQXg5IqI7PZTImfrnKwSAmesC4S4E6B4iYCGu2aMjaazAv0c5LkSvfyI3YK9E0INjvhNqCUzKSItLBV7Yhb9oKykBDZYShzT9s3lBStxbOh2k7+KlVptuniENwVSbppNega5loQFC++Ns5gmXYrPAqrbU2ZtUAmUZ6rdmSD3b99kfS2LnuVsOqYXi2I27k/rCYmpC8GWn9SHdG6mfxLzkwls8I4ZVBjtd4dmakEqSCSh6FZ6La1mooHVrS+0Ygn0atA7cLiZo09/rp0JWWZa3X2XXfH6kDhjnePmz4UNV84pjGgmx486aTe5+FnrBBXbzE=
   matrix:
   - TOXENV=check
   - TOXENV=docs
@@ -62,9 +63,8 @@ notifications:
 deploy:
   provider: pypi
   user: j340m3
-  password:
-    secure: "dRaxSzF+ZTqHZJK2JybZY+AfqySdZBNpODy1LcNEn3XKA9ot33ajtGNA9iPiLNb1uzlFwrDrwn3viN05M3eKYlXnXkR8oajMqNqhGxnUqL6WFIA9tbv3jEkLyEu/zd8CZiz3d/HKt6TI/EfLcEZkp/fjRyqOVNkmnKBOMcfYhkK6l655SrBobfGPLBf/jqB9qoNjS68kN4auULyhx0gpWVTlJtnUTc2XDcRK1Dnl2DUYC+GOvDK56c/hT0fDrhbgsoQSZBWMLg2BXUXZt5YuOg5HBPV7mpH7rUmlaKR744VKm3OQ/ciheTlvfVHcm74DD9qU8emOdcCf8ngs3/DiZeQFzk2o9pAxff4gUZQFbkyswqu0FLywTvRW+i5K4Hj2ChVHf6icmzBj//PU85Wwfp41438py1yYhUkavgJoQOT3VicebR3GisGnsu+gA6joMRIYAmsdZ8adZLRQENQFNJTSgsaYru+twnnZAZ4UZW1GuiR2V9fMFNUXI3dqh9oCNJ5tDwCsqnqeRpWud/s4vDa7lni4hYH+oIf4ZQ9LUs3Fd2lkJ59Fu7yJdp8KgcHAWFuvMzIi3YEtiYxAbYIjSqnhllXUAroFkuZ9Rv0XealS1x1NvlnaiewQKRFIaVqVblKESDVpjIfeVMOVOls4QcSo6JT1iiL6Xh/ozMRrDSQ="
+  password: $SOMEVAR
   on:
-    condition: $TOXENV == 2.7-nocov
+    condition: "$TOXENV == 2.7-nocov"
     repo: j340m3/python-msquaredc
-  distributions: "sdist"
+  distributions: sdist
