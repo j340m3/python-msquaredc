@@ -5,6 +5,7 @@ from __future__ import print_function
 
 import io
 import re
+import subprocess
 from glob import glob
 from os.path import basename
 from os.path import dirname
@@ -22,9 +23,15 @@ def read(*names, **kwargs):
     ).read()
 
 
+buildnr = "."
+try:
+    buildnr += subprocess.check_output(['git', 'rev-list', '--count', 'master']).decode('latin-1').strip()
+except Exception:
+    buildnr = ""
+
 setup(
     name='msquaredc',
-    version='0.1.0',
+    version='0.1.0{}'.format(buildnr),
     license='BSD',
     description='An example package. Generated with cookiecutter-pylibrary.',
     long_description='%s\n%s' % (
