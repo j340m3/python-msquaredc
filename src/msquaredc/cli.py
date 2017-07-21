@@ -29,7 +29,7 @@ from msquaredc.ui.interfaces import AbstractPresenter
 @click.option("--user-interface", default="gui", help="User interface to start. [tui | gui | web]")
 @click.option("--loglevel", default="warning", help="On which level to log. [debug | info | warning | error | critical]")
 @click.option("--logfile", default="logfile.log", help="Where to log.")
-def main(project_file, user_interface, loglevel, logfile):
+def main(project_file="", user_interface="gui", loglevel="warning", logfile="logfile.log"):
     """Command line interface to msquaredc."""
     setup_logging(loglevel,logfile)
 
