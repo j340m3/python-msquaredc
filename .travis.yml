@@ -68,6 +68,8 @@ deploy:
     repo: j340m3/python-msquaredc
     tags: false
   provider: pypi
+  edge:
+    branch: twine-user-install
   server: https://pypi.python.org/pypi
   user: "j340m3"
   password:
