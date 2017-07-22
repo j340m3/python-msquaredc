@@ -23,7 +23,6 @@ class AbstractMenu:
 
     def addEntry(self, entry, handle, *args, **kwargs):
         self.entries.append((entry, handle))
-        print("Entry:{}, Handle:{}, Self.Name:{}".format(entry,handle,self.name))
         self.logger.debug("Adding Entry {} to menu {} ".format(entry, self.name))
 
     def addSubmenu(self, menu, *args, **kwargs):

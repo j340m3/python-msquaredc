@@ -17,7 +17,7 @@ class GUIMenu(AbstractMenu):
         self.root = parent
         while self.root.parent is not None:
             self.root = self.root.parent
-        self.tk = self.parentp.tk
+        self.tk = self.parent.tk
         super(GUIMenu, self).__init__(self.parent, name)
 
         if not isinstance(self.parent, GUIMenu):
@@ -27,8 +27,7 @@ class GUIMenu(AbstractMenu):
             self.menu = tk.Menu(self.root.menu.tk, tearoff=False)
 
     def addEntry(self, entry, handle, *args, **kwargs):
-        label = tk.StringVar()
-        label.set(entry)
+        label = tk.StringVar(self.tk,entry,entry)
         super(GUIMenu, self).addEntry(entry, handle)
         self.root.add_label(entry, label.set)
         self.menu.add_command(label=label, command=handle)

@@ -32,8 +32,7 @@ from msquaredc.ui.interfaces import AbstractPresenter
 def main(project_file="", user_interface="gui", loglevel="warning", logfile="logfile.log"):
     """Command line interface to msquaredc."""
     setup_logging(loglevel,logfile)
-
-    presenter = AbstractPresenter(menuclass=AbstractMenu)
+    presenter = None
     if user_interface == "gui":
         from msquaredc.ui.gui.presenter import GUIPresenter
         from msquaredc.ui.gui.menu import GUIMenu
