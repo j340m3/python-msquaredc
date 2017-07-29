@@ -19,7 +19,7 @@ Overview
         | |landscape| |scrutinizer| |codacy| |codeclimate|
     * - package
       - | |version| |wheel| |supportedversions| |supportedimplementations|
-        | |waffle| |commitssince|
+        | |waffle| |commitssince| |openhub|
 
 .. |docs| image:: https://readthedocs.org/projects/python-msquaredc/badge/?style=flat
     :target: https://readthedocs.org/projects/python-msquaredc
@@ -84,6 +84,10 @@ Overview
 .. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/j340m3/python-msquaredc/master.svg
     :alt: Scrutinizer Status
     :target: https://scrutinizer-ci.com/g/j340m3/python-msquaredc/
+    
+.. |openhub| image:: https://www.openhub.net/p/python-msquaredc/widgets/project_thin_badge?format=gif
+    :alt: OpenHub metrics
+    :target: https://www.openhub.net/p/python-msquaredc/
 
 
 .. end-badges
