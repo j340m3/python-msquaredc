@@ -6,8 +6,8 @@ Overview
     :alt: Donate
     :target: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RUTXGLRTZ9YQ8
 .. image:: http://badges.gitter.im/j340m3/msquaredc.svg
-    :alt: Join the chat at https://gitter.im/j340m3/msquaredc
-    :target: https://gitter.im/j340m3/msquaredc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+    :alt: Join the chat at https://gitter.im/msquaredc/Lobby
+    :target: https://gitter.im/msquaredc/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
     
 .. start-badges
 
