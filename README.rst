@@ -5,7 +5,10 @@ Overview
 .. image:: https://img.shields.io/badge/Donate-PayPal-green.svg
     :alt: Donate
     :target: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RUTXGLRTZ9YQ8
-
+.. image:: http://badges.gitter.im/j340m3/msquaredc.svg
+    :alt: Join the chat at https://gitter.im/j340m3/msquaredc
+    :target: https://gitter.im/j340m3/msquaredc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+    
 .. start-badges
 
 .. list-table::
