@@ -11,20 +11,26 @@ elif version_info[0] == 3:
 
 
 class GUIMenu(AbstractMenu):
-    def __init__(self, root, name):
-        self.tk = root.tk
-        self.root = root
-        super(GUIMenu, self).__init__(root, name)
+    def __init__(self, name, parent):
+        self.name = name
+        self.parent = parent
+        self.root = parent
+        while self.root.parent is not None:
+            self.root = self.root.parent
+        self.tk = self.parent.tk
+        super(GUIMenu, self).__init__(self.parent, name)
 
-        if not isinstance(root, GUIMenu):
+        if not isinstance(self.parent, GUIMenu):
             self.menu = tk.Menu(self.tk, tearoff=False)
             self.tk.config(menu=self.menu)
         else:
-            self.menu = tk.Menu(self.root.menu, tearoff=False)
+            self.menu = tk.Menu(self.root.menu.tk, tearoff=False)
 
     def addEntry(self, entry, handle, *args, **kwargs):
+        label = tk.StringVar(self.tk,entry,entry)
         super(GUIMenu, self).addEntry(entry, handle)
-        self.menu.add_command(label=entry, command=handle)
+        self.root.add_label(entry, label.set)
+        self.menu.add_command(label=label, command=handle)
 
     def addSeparator(self):
         self.menu.add_separator()
