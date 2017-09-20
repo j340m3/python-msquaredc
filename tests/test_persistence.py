@@ -3,6 +3,7 @@ import unittest
 from msquaredc.persistence import count
 from msquaredc.persistence import obtain
 from msquaredc.persistence import persist
+from msquaredc.persistence import BackedUpDict
 
 
 class TestPersistence(unittest.TestCase):
@@ -26,3 +27,19 @@ class TestPersistence(unittest.TestCase):
             for j in samples[i].keys():
                 self.assertIn(j,res[i].keys())
                 self.assertEqual(str(samples[i][j]),res[i][j],j+str(samples)+str(res))
+
+
+class TestBackedUpDict(unittest.TestCase):
+    def test_add(self):
+        p = BackedUpDict(":memory:")
+        p["bla"] = "blupp"
+        self.assertEqual(p["bla"],"blupp")
+        p[1] = 2
+        self.assertEqual(p[1],2)
+        p[1] = "mahalo"
+        self.assertEqual(p[1],"mahalo")
+        self.assertIn(1,p.keys())
+        self.assertIn("bla",p.keys())
+        self.assertEqual(len(p),2)
+        p["1"] = "2"
+        self.assertEqual(p[1],"mahalo")

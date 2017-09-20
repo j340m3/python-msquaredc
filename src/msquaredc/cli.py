@@ -49,7 +49,7 @@ def main(project_file="", user_interface="gui", loglevel="warning", logfile="log
         project = presenter.new_project_wizard()
     else:
         try:
-            project = Project(path=project_file)
+            project = Project(data_path=project_file)
         except FileNotFoundError:
             project = presenter.new_project_wizard(path=project_file)
     presenter.load_mainframe(project)

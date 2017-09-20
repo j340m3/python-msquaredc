@@ -6,7 +6,65 @@ if version_info[0] == 2:
     from itertools import izip_longest as zip_longest
 elif version_info[0] == 3:
     from itertools import zip_longest
+import sqlite3
+from weakref import WeakKeyDictionary
 
+
+class BackedUpDict(object):
+    def __init__(self,path):
+        self.typemapping = {int:"int",str:"str",float:"float"}
+        self.conn = sqlite3.connect(path)
+        c = self.conn.cursor()
+        for name,type_ in [("str","text"),("int","integer"),("float","real")]:
+            c.execute("""CREATE TABLE IF NOT EXISTS data_{}_str (key {}, value text);""".format(name,type_))
+            c.execute("""CREATE TABLE IF NOT EXISTS data_{}_int (key {}, value integer);""".format(name,type_))
+            c.execute("""CREATE TABLE IF NOT EXISTS data_{}_float (key {}, value real);""".format(name,type_))
+        self.conn.commit()
+
+    def __getitem__(self, item):
+        c = self.conn.cursor()
+        res = list()
+        for i in ["str","int","float"]:
+            c.execute("""SELECT value FROM data_{}_{} where key=?;""".format(self.typemapping[type(item)],i),(item,))
+            res += c.fetchall()
+
+        if len(res) == 1:
+            return res[0][0]
+        else:
+            raise KeyError
+
+    def get(self,item,default=None):
+        try:
+            res = self.__getitem__(item)
+            return res
+        except KeyError:
+            return default
+
+    def __setitem__(self, key, value):
+        res = self.get(key,None)
+        c = self.conn.cursor()
+        if res is not None:
+            c.execute("""DELETE FROM data_{}_{} WHERE key =?;""".format(self.typemapping[type(key)],self.typemapping[type(res)]),(key,))
+        c.execute("""INSERT INTO data_{}_{} VALUES (?,?);""".format(self.typemapping[type(key)],self.typemapping[type(value)]),(key,value))
+        self.conn.commit()
+
+    def keys(self):
+        c = self.conn.cursor()
+        res = list()
+        for i in ["str", "int", "float"]:
+            for j in ["str","int","float"]:
+                c.execute("""SELECT key FROM data_{}_{};""".format(i,j))
+                res += c.fetchall()
+        return [i[0] for i in res]
+
+    def __len__(self):
+        return len(self.keys())
+
+    def __contains__(self, item):
+        return item in self.keys()
+
+    def __iter__(self):
+        return iter(self.keys())
 
 def obtain(filename):
     with open(filename, 'r') as file_:
