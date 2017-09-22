@@ -70,7 +70,7 @@ class Project(object):
         return self
 
     def __next__(self):
-		
+		self.state
 
 class FileNotFoundError(IOError):
     pass
