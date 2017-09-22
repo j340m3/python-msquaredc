@@ -69,9 +69,9 @@ class Project(object):
     def __iter__(self):
         return self
 
-    def __next__(self):
-		self.state[
-
+    def __next__(self):J
+		self.state[]
+		
 class FileNotFoundError(IOError):
     pass
 
