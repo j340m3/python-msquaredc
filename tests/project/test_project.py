@@ -30,11 +30,11 @@ def test_cleanup(func):
 class ProjectTest(unittest.TestCase):
     @test_cleanup
     def test_init(self,file):
-        p = Project(data="data sample for jerome.txt", questions="config.yml", coder="MGM", file=file)
+        p = Project(data="data.txt", questions="config.yml", coder="MGM", file=file)
 
     @test_cleanup
     def test_integration(self,file):
-        p = Project(data="data sample for jerome.txt", questions="config.yml", coder="MGM", file=file)
+        p = Project(data="data.txt", questions="config.yml", coder="MGM", file=file)
         value = 0
         for index,i in enumerate(p):
             for j in i.coding_questions:

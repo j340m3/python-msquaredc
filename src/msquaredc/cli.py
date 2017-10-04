@@ -16,7 +16,7 @@ Why does this file exist, and why not put this in __main__?
 """
 import logging
 
-import click
+import click, os
 
 from msquaredc.project import FileNotFoundError
 from msquaredc.project import Project
@@ -25,13 +25,17 @@ from msquaredc.ui.interfaces import AbstractPresenter
 
 
 @click.command()
-@click.option('--project-file', default="", help="Location of the project file.")
+@click.option('--config-file', default=None, help="Location of the project configuration file.")
+@click.option("--data-file", default="data.txt", help="Location of the data file.")
 @click.option("--user-interface", default="gui", help="User interface to start. [tui | gui | web]")
 @click.option("--loglevel", default="warning", help="On which level to log. [debug | info | warning | error | critical]")
 @click.option("--logfile", default="logfile.log", help="Where to log.")
-def main(project_file="", user_interface="gui", loglevel="warning", logfile="logfile.log"):
+@click.option("--coder",default=None,help="Current coder.")
+def main(config_file=None, data_file="data.txt", user_interface="gui", loglevel="warning", logfile="logfile.log",coder = None):
     """Command line interface to msquaredc."""
     setup_logging(loglevel,logfile)
+    check_file(config_file)
+    check_file(data_file)
     presenter = None
     if user_interface == "gui":
         from msquaredc.ui.gui.presenter import GUIPresenter
@@ -45,13 +49,14 @@ def main(project_file="", user_interface="gui", loglevel="warning", logfile="log
         print("NotSupportedYet")
     else:
         presenter = AbstractPresenter()
-    if project_file is None:
+    if config_file is None:
         project = presenter.new_project_wizard()
     else:
         try:
-            project = Project(data_path=project_file)
+            #coder,disamb = presenter.getCoder()
+            project = Project(data=data_file, questions=config_file, coder=coder)
         except FileNotFoundError:
-            project = presenter.new_project_wizard(path=project_file)
+            project = presenter.new_project_wizard(path=config_file, questions=config_file)
     presenter.load_mainframe(project)
     presenter.run()
 
@@ -71,6 +76,14 @@ def setup_logging(loglevel,logfile):
     formatter = logging.Formatter('%(name)-30s %(levelname)-8s %(message)s')
     console.setFormatter(formatter)
     logging.getLogger("").addHandler(console)
+
+def check_file(filename):
+    if not os.path.exists(filename):
+        logging.log(logging.CRITICAL,"Couldn't find the file '{}'.".format(filename))
+        import sys
+        sys.exit(1)
+    else:
+        logging.log(logging.DEBUG, "Found the file '{}'.".format(filename))
 
 if __name__ == "__main__":  # pragma no cover
     main()

@@ -53,7 +53,6 @@ class Project(object):
                         if not identifier:
                             c.execute("""INSERT INTO individuals ({}) VALUES ({})""".format(", ".join(columns)," ,".join("?" for _ in values)),values)
                             self.conn.commit()
-
         if "questions" in kwargs:
             c.execute("""CREATE TABLE IF NOT EXISTS question_assoc (question text, coding text)""")
             with open(os.path.join(path,kwargs["questions"])) as file:
