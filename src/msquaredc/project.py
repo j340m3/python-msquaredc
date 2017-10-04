@@ -260,7 +260,7 @@ class CodingUnit(object):
         self.project.store_answer(self.question,key,value,self.id)
 
     def __repr__(self):
-        return "\n".join(["Coding unit: {} -> {}".format(self.question,self.answer)]+["•{}\n\t-> {}".format(i, self.coding_answers.get(i,None)) for i in self.coding_questions])
+        return "\n".join(["Coding unit: {} -> {}".format(self.question,self.answer)]+["-{}\n\t-> {}".format(i, self.coding_answers.get(i,None)) for i in self.coding_questions])
 
 class FileNotFoundError(IOError):
     pass
