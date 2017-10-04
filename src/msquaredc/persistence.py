@@ -7,7 +7,6 @@ if version_info[0] == 2:
 elif version_info[0] == 3:
     from itertools import zip_longest
 import sqlite3
-from weakref import WeakKeyDictionary
 
 
 class BackedUpDict(object):
