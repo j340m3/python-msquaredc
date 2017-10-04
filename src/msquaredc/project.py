@@ -5,6 +5,10 @@ import os
 import sqlite3
 from itertools import repeat
 
+class FileNotFoundError(IOError):
+    pass
+
+
 
 class Project(object):
     def __init__(self, path=".",file="project.db",coder=None, *args, **kwargs):
@@ -262,6 +266,4 @@ class CodingUnit(object):
     def __repr__(self):
         return "\n".join(["Coding unit: {} -> {}".format(self.question,self.answer)]+["-{}\n\t-> {}".format(i, self.coding_answers.get(i,None)) for i in self.coding_questions])
 
-class FileNotFoundError(IOError):
-    pass
 

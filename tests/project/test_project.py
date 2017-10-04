@@ -1,18 +1,27 @@
 from msquaredc.project import Project
 import unittest,os
 
+class PermissionError(IOError):
+    pass
+
+class FileNotFoundError(IOError):
+    pass
+
+class WindowsError(IOError):
+    pass
+
 def test_cleanup(func):
     def call(*args,**kwargs):
         try:
             os.remove(func.__name__)
-        except (PermissionError,FileNotFoundError):
+        except (PermissionError,FileNotFoundError,WindowsError):
             pass
         try:
             res = func(*args, file=func.__name__,**kwargs)
         finally:
             try:
                 os.remove(func.__name__)
-            except (PermissionError, FileNotFoundError):
+            except (PermissionError, FileNotFoundError,WindowsError):
                 pass
         return res
     return call
