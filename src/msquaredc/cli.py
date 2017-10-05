@@ -30,7 +30,7 @@ from msquaredc.ui.interfaces import AbstractPresenter
 @click.option("--user-interface", default="gui", help="User interface to start. [tui | gui | web]")
 @click.option("--loglevel", default="warning", help="On which level to log. [debug | info | warning | error | critical]")
 @click.option("--logfile", default="logfile.log", help="Where to log.")
-@click.option("--coder",default=None,help="Current coder.")
+@click.option("--coder", default=None, help="Current coder.")
 def main(config_file=None, data_file="data.txt", user_interface="gui", loglevel="warning", logfile="logfile.log",coder = None):
     """Command line interface to msquaredc."""
     setup_logging(loglevel,logfile)
