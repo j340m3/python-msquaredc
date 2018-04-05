@@ -66,11 +66,11 @@ class AbstractPresenter:
         self.pb = projectbuilder
 
     def build_project(self):
-        if self.pb["config_file"] is None:
+        if self.pb.config is None:
             self.get_config_file()
-        if self.pb["data_file"] is None:
+        if self.pb.data is None:
             self.get_data_file()
-        if self.pb["coder"] is None:
+        if self.pb.coder is None:
             self.get_coder()
 
     def get_coder(self):
@@ -116,4 +116,6 @@ class AbstractPresenter:
                         "Tried to show the settings pane from the Interface, probably the child class hasn't implemented it yet!")
 
     def run(self):
-        self.build_project()
+        if not self.pb.finished():
+            self.build_project()
+        self.load_mainframe(self.pb.build())

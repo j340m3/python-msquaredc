@@ -279,7 +279,6 @@ class Project(object):
         #    pass
         """
 
-
 class CodingUnit(object):
     def __init__(self, project, question, answer, coding_questions, id_):
         self.question = question

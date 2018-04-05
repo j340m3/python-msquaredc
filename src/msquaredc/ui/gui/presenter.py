@@ -119,6 +119,11 @@ class GUIPresenter(AbstractPresenter):
         else:
             done = False
             self["econfig"].config(highlightbackground="RED")
+        if os.path.isfile(data_file):
+            self["edata"].config(highlightbackground="GREEN")
+        else:
+            done = False
+            self["edata"].config(highlightbackground="RED")
 
         if done:
             for i in self:
@@ -128,6 +133,7 @@ class GUIPresenter(AbstractPresenter):
         for child in self.frame.winfo_children():
             child.destroy()
 
+    """
     def get_coder(self):
         self.logger.debug("Asking coder")
         label = tk.Label(self.frame, text="Please insert coder:")
@@ -138,7 +144,7 @@ class GUIPresenter(AbstractPresenter):
         b1 = tk.Button(self.frame, text="Save", command=self.__cleanup_get_coder)
         b1.bind("<Tab>", self.focus_next_window)
         b1.grid(row=1, column=1)
-
+    """
     def __cleanup_get_coder(self):
         for child in self.frame.winfo_children():
             if type(child) is tk.Entry:
@@ -169,6 +175,11 @@ class GUIPresenter(AbstractPresenter):
     def load_mainframe(self, project, *args, **kwargs):
         self.logger.info("Loading Mainframe.")
         self.project = project
+        for i in self.project:
+            self.answer_question(i)
+
+    def answer_question(self,question):
+        print(question)
 
     def run(self):
         self.logger.debug("Starting GUI")
