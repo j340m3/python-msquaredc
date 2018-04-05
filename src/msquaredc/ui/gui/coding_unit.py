@@ -1,4 +1,5 @@
 from sys import version_info
+
 if version_info[0] == 2:
     # We are using Python 2.x
     import Tkinter as tk

@@ -43,7 +43,7 @@ class AbstractLabel:
 class AbstractPresenter:
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, name=None, menuclass=AbstractMenu, *args, **kwargs):
+    def __init__(self, name=None, menuclass=AbstractMenu, projectbuilder=None, *args, **kwargs):
         if name:
             self.logger = logging.getLogger(name)
         else:
@@ -54,14 +54,36 @@ class AbstractPresenter:
 
         # Init Menu
         self.menu = menuclass(_("Main Menu"), self)
-        submenu = menuclass( _("File"),self.menu)
+        submenu = menuclass(_("File"), self.menu)
         submenu.addEntry("New", None)
         submenu.addEntry("Open", None)
         submenu.addEntry("Exit", None)
         self.menu.addSubmenu(submenu)
-        submenu2 = menuclass( "Edit",self.menu)
+        submenu2 = menuclass("Edit", self.menu)
         submenu2.addEntry("Settings", None)
         self.menu.addSubmenu(submenu2)
+
+        self.pb = projectbuilder
+
+    def build_project(self):
+        if self.pb.config is None:
+            self.get_config_file()
+        if self.pb.data is None:
+            self.get_data_file()
+        if self.pb.coder is None:
+            self.get_coder()
+
+    def get_coder(self):
+        self.logger.log(logging.ERROR,
+                        "Tried to ask for the coder, probably the child class hasn't implemented it yet!")
+
+    def get_config_file(self):
+        self.logger.log(logging.ERROR,
+                        "Tried to ask for the config file, probably the child class hasn't implemented it yet!")
+
+    def get_data_file(self):
+        self.logger.log(logging.ERROR,
+                        "Tried to ask for the data file, probably the child class hasn't implemented it yet!")
 
     def add_label(self, key, callable_f):
         self.labels[key] = self.labels.get(key, []).append(callable_f)
@@ -94,5 +116,6 @@ class AbstractPresenter:
                         "Tried to show the settings pane from the Interface, probably the child class hasn't implemented it yet!")
 
     def run(self):
-        self.logger.log(logging.ERROR,
-                        "Tried to run the User Interface from the Interface, probably the child class hasn't implemented it yet!")
+        if not self.pb.finished():
+            self.build_project()
+        self.load_mainframe(self.pb.build())

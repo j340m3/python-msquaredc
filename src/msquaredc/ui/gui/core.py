@@ -152,7 +152,6 @@ class StatusBar(tk.Frame):  # pragma no cover
 
 class NavBar(tk.Frame):  # pragma no cover
     def __init__(self, master):
-
         tk.Frame.__init__(self, master)
         self.next = tk.Button(text="Next >", command=lambda: master.handle_callback("next"))
         self.prev = tk.Button(text="< Previous", command=lambda: master.handle_callback("prev"))
@@ -283,7 +282,7 @@ class InfoField(tk.Frame):  # pragma no cover
         self.__length = tk.Label(master, textvariable=self.__lengthvar, anchor=tk.W, font=font, pady=5)
         self.q = tk.Label(self, text="Question:", anchor=tk.E, font=font, pady=5)
         self.a = tk.Label(self, text="Answer:", anchor=tk.E, font=font, pady=10)
-        self.l = tk.Label(self, text="Length:", anchor=tk.E, font=font, pady=5)
+        self.length_label = tk.Label(self, text="Length:", anchor=tk.E, font=font, pady=5)
         self.__title.grid(in_=self, row=0, columnspan=2)
         self.q.grid(in_=self, column=0, row=1)
         self.__question.grid(in_=self, column=1, row=1)
@@ -342,7 +341,7 @@ class WidgetField(tk.Frame):  # pragma no cover
         for i, element in enumerate(self.widgets):
             index = 2
             for k, j in enumerate(element.variables[1:]):
-                j.grid(column=index+k, row=i, in_=self)
+                j.grid(column=index + k, row=i, in_=self)
 
     def get_res_dict(self):
         return {element.label.cget('text'): element.variables[0].get() for element in self.widgets}

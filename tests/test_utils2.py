@@ -13,11 +13,12 @@ class TestDecorator(unittest.TestCase):
         class A:
             def a(self):
                 return 2
+
         a_inst = A()
 
         self.assertIsNotNone(a_inst)
-        self.assertEqual(a_inst.__class__.__name__,"A")
-        self.assertEqual(a_inst.a(),2)
+        self.assertEqual(a_inst.__class__.__name__, "A")
+        self.assertEqual(a_inst.a(), 2)
 
     def test_method_without_args(self):
         @Decorator
@@ -29,7 +30,7 @@ class TestDecorator(unittest.TestCase):
     def test_arg_class_without_args(self):
         @Decorator
         class A:
-            def __init__(self,b):
+            def __init__(self, b):
                 self.b = b
 
             def a(self):
@@ -49,25 +50,26 @@ class TestDecorator(unittest.TestCase):
         self.assertEqual(A(3), 3)
 
     def test_class_with_args(self):
-        @Decorator(1,k=2)
+        @Decorator(1, k=2)
         class A:
             def a(self):
                 return 2
+
         a_inst = A()
 
         self.assertIsNotNone(a_inst)
-        self.assertEqual(a_inst.__class__.__name__,"A")
-        self.assertEqual(a_inst.a(),2)
+        self.assertEqual(a_inst.__class__.__name__, "A")
+        self.assertEqual(a_inst.a(), 2)
 
     def test_method_with_args(self):
-        @Decorator(1,k=2)
+        @Decorator(1, k=2)
         def A():
             return 3
 
         self.assertEqual(A(), 3)
 
     def test_arg_class_with_args(self):
-        @Decorator(1,k=2)
+        @Decorator(1, k=2)
         class A:
             def __init__(self, b):
                 self.b = b
@@ -82,7 +84,7 @@ class TestDecorator(unittest.TestCase):
         self.assertEqual(a_inst.a(), 2)
 
     def test_arg_method_without_args(self):
-        @Decorator(1,k=2)
+        @Decorator(1, k=2)
         def A(a):
             return a
 
@@ -90,7 +92,7 @@ class TestDecorator(unittest.TestCase):
 
     def test_callable_as_decorator_arg_in_function(self):
         def f(a):
-            return a*2
+            return a * 2
 
         @Decorator(f, k=2)
         def A(a):
@@ -100,7 +102,7 @@ class TestDecorator(unittest.TestCase):
 
     def test_callable_as_decorator_arg_in_class(self):
         def f(a):
-            return a*2
+            return a * 2
 
         @Decorator(f, k=2)
         class A:
@@ -118,7 +120,7 @@ class TestDecorator(unittest.TestCase):
 
     def test_callable_everywhere_in_function(self):
         def f(a):
-            return a*2
+            return a * 2
 
         def ident(a):
             return a
@@ -131,7 +133,7 @@ class TestDecorator(unittest.TestCase):
 
     def test_callable_everywhere_in_class(self):
         def f(a):
-            return a*2
+            return a * 2
 
         def g(a):
             return a
@@ -156,48 +158,54 @@ class TestDecorator(unittest.TestCase):
                 self.args = args
                 self.kwargs = kwargs
 
-        @Decorator(B,4)
+        @Decorator(B, 4)
         class A:
             def a(self):
                 return 2
+
         a_inst = A()
 
         self.assertIsNotNone(a_inst)
-        self.assertEqual(a_inst.__class__.__name__,"A")
-        self.assertEqual(a_inst.a(),2)
+        self.assertEqual(a_inst.__class__.__name__, "A")
+        self.assertEqual(a_inst.a(), 2)
 
     def test_class_decorator(self):
-
         class A(object):
             def __str__(self):
                 return "Bla"
-        a = Decorator.create_wrapping_class(A,{})
-        self.assertEqual(str(a()),"Bla")
-        self.assertEqual(a().__class__.__name__,"A")
-        self.assertEqual(repr(a()).split("at 0x")[0],repr(A()).split("at 0x")[0])
-        self.assertIsInstance(a(),A)
-        self.assertEqual(repr(a),repr(A))
+
+        a = Decorator.create_wrapping_class(A, {})
+        self.assertEqual(str(a()), "Bla")
+        self.assertEqual(a().__class__.__name__, "A")
+        self.assertEqual(repr(a()).split("at 0x")[0], repr(A()).split("at 0x")[0])
+        self.assertIsInstance(a(), A)
+        self.assertEqual(repr(a), repr(A))
 
     def test_inheritance_in_class_decorator(self):
         class A(object):
             def a(self):
                 return 2
+
         class B(A):
             def b(self):
                 return 3
-        b = Decorator.create_wrapping_class(B,{})
+
+        b = Decorator.create_wrapping_class(B, {})
+
         class C(b):
             def c(self):
                 return 4
-        self.assertEqual(b().b(),3)
-        self.assertEqual(b().a(),2)
-        self.assertEqual(C().b(),3)
-        self.assertTrue(issubclass(C,B))
-        self.assertTrue(issubclass(C,A))
+
+        self.assertEqual(b().b(), 3)
+        self.assertEqual(b().a(), 2)
+        self.assertEqual(C().b(), 3)
+        self.assertTrue(issubclass(C, B))
+        self.assertTrue(issubclass(C, A))
+
 
 class TestLCS(unittest.TestCase):
     def test_string(self):
-        self.assertEqual(lcs("123123123","352515"),"321")
+        self.assertEqual(lcs("123123123", "352515"), "321")
 
 
 if __name__ == "__main__":

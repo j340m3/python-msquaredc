@@ -1,4 +1,5 @@
 from sys import version_info
+
 if version_info[0] == 2:
     # We are using Python 2.x
     import Tkinter as tk
@@ -30,5 +31,5 @@ class ScaleWidget(tk.Frame):  # pragma : no cover
         super(ScaleWidget, self).__init__(master)
         self.min = min_
         self.max = max_
-        self.variables = [tk.Entry(master, width=2) for _ in range(redundancy+1)]
+        self.variables = [tk.Entry(master, width=2) for _ in range(redundancy + 1)]
         self.label = tk.Label(master, text=label)
