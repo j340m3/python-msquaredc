@@ -89,8 +89,8 @@ class Project(object):
                 c.execute("""CREATE TABLE IF NOT EXISTS {} (id INTEGER PRIMARY KEY, {})""".format(
                     self.__transform_column(question["text"]), qquery))
                 for i in question["coding"]:
-                    c.execute("""INSERT INTO question_assoc SELECT ?,? 
-                                 WHERE NOT EXISTS(SELECT 1 FROM question_assoc WHERE question=? AND coding=?)""",
+                    c.execute("""INSERT INTO question_assoc SELECT ?,?
+                                  WHERE NOT EXISTS(SELECT 1 FROM question_assoc WHERE question=? AND coding=?)""",
                               (question["text"], i["criteria"], question["text"], i["criteria"]))
                 self.conn.commit()
 
@@ -251,11 +251,14 @@ class Project(object):
             for j in self.get_columns(i):
                 titles.append((i, j))
         """
-        columns = [i[1] for i in titles if i[0] == "individuals" and i[1] not in [self.__transform_column(i[0]) for i in self.custom_tables]]
+        columns = [i[1] for i in titles if i[0] == "individuals" and i[1] not
+         in [self.__transform_column(i[0]) for i in self.custom_tables]]
         print(len(columns),columns)
         """
+        '''
         command = """SELECT {} FROM individuals\n""".format(", ".join(list(map(".".join, titles)))) + "".join(
             ["""INNER JOIN {} ON {}\n""".format(i, """{}.id = individuals.id""".format(i)) for i in self.custom_tables])
+        '''
         """
         print(command)
         c = self.conn.cursor()

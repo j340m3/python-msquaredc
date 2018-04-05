@@ -77,8 +77,6 @@ class GUIPresenter(AbstractPresenter):
     def wraplength(self):
         return self.tk.winfo_width()
 
-
-
     def build_project(self):
         self["title"] = tk.Label(self.frame, text="Please verify project details:", wraplength=self.wraplength)
         self["title"].grid(row=0)
@@ -182,7 +180,7 @@ class GUIPresenter(AbstractPresenter):
 
     def show_question(self):
         self.logger.debug("Showing question")
-        
+
         self["question"] = tk.Label(self.frame, text=self.current_question.question, wraplength=self.wraplength)
         self["question"].grid(row=0)
         self["answer"] = tk.Label(self.frame, text=self.current_question.answer, wraplength=self.wraplength)
@@ -214,7 +212,7 @@ class GUIPresenter(AbstractPresenter):
         try:
             super(GUIPresenter, self).run()
             self.tk.mainloop()
-        except:
+        except Exception:
             self.logger.critical("Unhandled Error:\n{}".format(traceback.format_exc()).rstrip())
         else:
             self.logger.debug("Leaving GUI normally.")

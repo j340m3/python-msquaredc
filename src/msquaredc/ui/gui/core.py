@@ -282,7 +282,7 @@ class InfoField(tk.Frame):  # pragma no cover
         self.__length = tk.Label(master, textvariable=self.__lengthvar, anchor=tk.W, font=font, pady=5)
         self.q = tk.Label(self, text="Question:", anchor=tk.E, font=font, pady=5)
         self.a = tk.Label(self, text="Answer:", anchor=tk.E, font=font, pady=10)
-        self.l = tk.Label(self, text="Length:", anchor=tk.E, font=font, pady=5)
+        self.length_label = tk.Label(self, text="Length:", anchor=tk.E, font=font, pady=5)
         self.__title.grid(in_=self, row=0, columnspan=2)
         self.q.grid(in_=self, column=0, row=1)
         self.__question.grid(in_=self, column=1, row=1)

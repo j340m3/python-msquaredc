@@ -1,4 +1,5 @@
 import os
+import sqlite3
 from itertools import repeat
 from itertools import takewhile
 from sys import version_info
@@ -7,7 +8,6 @@ if version_info[0] == 2:
     from itertools import izip_longest as zip_longest
 elif version_info[0] == 3:
     from itertools import zip_longest
-import sqlite3
 
 
 class BackedUpDict(object):
