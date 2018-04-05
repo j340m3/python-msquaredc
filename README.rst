@@ -8,7 +8,7 @@ Overview
 .. image:: http://badges.gitter.im/j340m3/msquaredc.svg
     :alt: Join the chat at https://gitter.im/msquaredc/Lobby
     :target: https://gitter.im/msquaredc/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-    
+
 .. start-badges
 
 .. list-table::
@@ -57,7 +57,7 @@ Overview
     :alt: Codacy Code Quality Status
 
 .. |codeclimate| image:: https://codeclimate.com/github/j340m3/python-msquaredc/badges/gpa.svg
-   :target: https://codeclimate.com/github/j340m3/python-msquaredc
+    :target: https://codeclimate.com/github/j340m3/python-msquaredc
    :alt: CodeClimate Quality Status
 
 .. |version| image:: https://img.shields.io/pypi/v/msquaredc.svg
@@ -87,7 +87,7 @@ Overview
 .. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/j340m3/python-msquaredc/master.svg
     :alt: Scrutinizer Status
     :target: https://scrutinizer-ci.com/g/j340m3/python-msquaredc/
-    
+
 .. |openhub| image:: https://www.openhub.net/p/python-msquaredc/widgets/project_thin_badge?format=gif
     :alt: OpenHub metrics
     :target: https://www.openhub.net/p/python-msquaredc/
@@ -124,8 +124,8 @@ Note, to combine the coverage data from all the tox environments run:
     :widths: 10 90
     :stub-columns: 1
 
-    - - Windows
-      - ::
+                - - Windows
+                  - ::
 
             set PYTEST_ADDOPTS=--cov-append
             tox
@@ -134,7 +134,7 @@ Note, to combine the coverage data from all the tox environments run:
       - ::
 
             PYTEST_ADDOPTS=--cov-append tox
-            
+
 Donation
 ========
 Please consider to support me:

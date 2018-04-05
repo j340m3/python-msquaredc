@@ -8,10 +8,6 @@ test_msquaredc
 Tests for `msquaredc` module.
 """
 
-from click.testing import CliRunner
-
-from msquaredc import cli
-
 
 class Testmsquaredc(object):
 
@@ -35,4 +31,3 @@ class Testmsquaredc(object):
     @classmethod
     def teardown_class(cls):
         pass
-

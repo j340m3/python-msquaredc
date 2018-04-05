@@ -52,7 +52,7 @@ class Project(object):
         self.conn.commit()
         if "data" in kwargs:
             with open(os.path.join(path, kwargs["data"])) as file:
-                res = Project.handleTSV(file)
+                res = Project.handleCSV(file, ";")
             if len(res):
                 titles = list(res[0].keys())
                 cquery = ["{} {}".format(self.__transform_column(i), "TEXT") for i in titles]
@@ -77,11 +77,13 @@ class Project(object):
                                                                                                 "?" for _ in values)),
                                       values)
                             self.conn.commit()
-        if "questions" in kwargs:
+        if "config" in kwargs:
             c.execute("""CREATE TABLE IF NOT EXISTS question_assoc (question text, coding text)""")
-            with open(os.path.join(path, kwargs["questions"])) as file:
+            with open(os.path.join(path, kwargs["config"])) as file:
                 questions = yaml.load(file)
+                print(questions)
             for question in questions["questions"]:
+
                 qquery = ", ".join(
                     [self.__transform_column(i["criteria"]) + " TEXT" for i in question["coding"]] + ["coder TEXT"])
                 c.execute("""CREATE TABLE IF NOT EXISTS {} (id INTEGER PRIMARY KEY, {})""".format(
@@ -132,24 +134,14 @@ class Project(object):
                     self.state[i] = kwargs[i]
 
     @staticmethod
-    def handleTSV(file):
+    def handleCSV(file, separator):
         res = []
         titles = []
         for i, j in enumerate(file):
             if i == 0:
-                titles = j.strip("\n").split("\t")
+                titles = j.strip("\n").split(separator)
             else:
-                res.append(dict(zip(titles, j.strip("\n").split("\t"))))
-        return res
-
-    @staticmethod
-    def handleCSV(file):
-        res = []
-        titles = []
-        for i, j in enumerate(file):
-            if i == 0:
-                titles = j.split(",")
-        print(titles)
+                res.append(dict(zip(titles, j.strip("\n").split(separator))))
         return res
 
     @property
@@ -278,6 +270,7 @@ class Project(object):
         #with open(os.path.join(self.path,filename)):
         #    pass
         """
+
 
 class CodingUnit(object):
     def __init__(self, project, question, answer, coding_questions, id_):

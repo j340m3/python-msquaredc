@@ -15,9 +15,9 @@ Why does this file exist, and why not put this in __main__?
   Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
 """
 import logging
+import os
 
 import click
-import os
 
 from msquaredc.project import ProjectBuilder
 from msquaredc.ui.interfaces import AbstractPresenter

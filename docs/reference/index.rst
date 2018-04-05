@@ -2,6 +2,6 @@ Reference
 =========
 
 .. toctree::
-    :glob:
+:glob:
 
-    msquaredc*
+        msquaredc*

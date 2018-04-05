@@ -48,6 +48,9 @@ class GUIPresenter(AbstractPresenter):
     def __iter__(self):
         return self.widgets.__iter__()
 
+    def __len__(self):
+        return self.widgets.__len__()
+
     def init_tk(self):
         self.logger.info("Initializing Tk")
         self.widgets = dict()
@@ -74,9 +77,7 @@ class GUIPresenter(AbstractPresenter):
     def wraplength(self):
         return self.tk.winfo_width()
 
-    def show_question(self, question):
-        self.logger.debug("Showing question")
-        self.logger.debug("Question shown")
+
 
     def build_project(self):
         self["title"] = tk.Label(self.frame, text="Please verify project details:", wraplength=self.wraplength)
@@ -145,6 +146,7 @@ class GUIPresenter(AbstractPresenter):
         b1.bind("<Tab>", self.focus_next_window)
         b1.grid(row=1, column=1)
     """
+
     def __cleanup_get_coder(self):
         for child in self.frame.winfo_children():
             if type(child) is tk.Entry:
@@ -175,11 +177,37 @@ class GUIPresenter(AbstractPresenter):
     def load_mainframe(self, project, *args, **kwargs):
         self.logger.info("Loading Mainframe.")
         self.project = project
-        for i in self.project:
-            self.answer_question(i)
+        self.current_question = project.__next__()
+        self.show_question()
 
-    def answer_question(self,question):
-        print(question)
+    def show_question(self):
+        self.logger.debug("Showing question")
+        
+        self["question"] = tk.Label(self.frame, text=self.current_question.question, wraplength=self.wraplength)
+        self["question"].grid(row=0)
+        self["answer"] = tk.Label(self.frame, text=self.current_question.answer, wraplength=self.wraplength)
+        self["answer"].grid(row=1)
+
+        for i, j in enumerate(self.current_question.coding_questions):
+            self["l" + str(i)] = tk.Label(self.frame, text=j)
+            self["l" + str(i)].grid(row=2 * (i + 1))
+            self["e" + str(i)] = tk.Entry(self.frame)
+            self["e" + str(i)].grid(row=2 * (i + 1) + 1)
+
+        self["button"] = tk.Button(self.frame, text="Submit", command=self.__cleanup_answer_question)
+        self["button"].grid(row=2 * (i + 2))
+
+        self.logger.debug("Question shown")
+
+    def __cleanup_answer_question(self):
+        done = True
+
+        # Some not None Checks
+
+        if done:
+            for i in self:
+                self[i].destroy()
+            self.show_question()
 
     def run(self):
         self.logger.debug("Starting GUI")

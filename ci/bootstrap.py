@@ -9,7 +9,6 @@ from os.path import dirname
 from os.path import exists
 from os.path import join
 
-
 if __name__ == "__main__":
     base_path = dirname(dirname(abspath(__file__)))
     print("Project path: {0}".format(base_path))
