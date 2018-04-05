@@ -7,8 +7,6 @@ class TestMain(object):
     def test_something(self):
         pass
 
-
     @classmethod
     def teardown_class(cls):
         pass
-
