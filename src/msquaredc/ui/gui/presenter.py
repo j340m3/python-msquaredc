@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from sys import version_info
-from msquaredc.ui.interfaces import AbstractPresenter
-import traceback
 import os
+import traceback
+from sys import version_info
+
+from msquaredc.ui.interfaces import AbstractPresenter
 
 if version_info[0] == 2:
     # We are using Python 2.x
@@ -17,15 +18,15 @@ elif version_info[0] == 3:
     import tkinter.filedialog as filedialog
 
 
-
 def center(toplevel):
     toplevel.update_idletasks()
     w = toplevel.winfo_screenwidth()
     h = toplevel.winfo_screenheight()
     size = tuple(int(_) for _ in toplevel.geometry().split('+')[0].split('x'))
-    x = w/2 - size[0]/2
-    y = h/2 - size[1]/2
+    x = w / 2 - size[0] / 2
+    y = h / 2 - size[1] / 2
     toplevel.geometry("%dx%d+%d+%d" % (size + (x, y)))
+
 
 class GUIPresenter(AbstractPresenter):
     def __init__(self, *args, **kwargs):
@@ -39,7 +40,7 @@ class GUIPresenter(AbstractPresenter):
         self.logger.info("The GUI presenter has been build.")
 
     def __setitem__(self, key, value):
-        self.widgets.__setitem__(key,value)
+        self.widgets.__setitem__(key, value)
 
     def __getitem__(self, item):
         return self.widgets.__getitem__(item)
@@ -62,12 +63,12 @@ class GUIPresenter(AbstractPresenter):
         self.logger.info("Tk initialized")
         center(self.tk)
         top = self.tk.winfo_toplevel()
-        top.rowconfigure(0,weight=1)
-        top.columnconfigure(0,weight=1)
+        top.rowconfigure(0, weight=1)
+        top.columnconfigure(0, weight=1)
         self.frame = tk.Frame(self.tk)
         self.frame.place(relx=0.5, rely=0.5, anchor='center')
-        self.frame.columnconfigure(0,weight=1)
-        self.frame.rowconfigure(0,weight=1)
+        self.frame.columnconfigure(0, weight=1)
+        self.frame.rowconfigure(0, weight=1)
 
     @property
     def wraplength(self):
@@ -78,35 +79,35 @@ class GUIPresenter(AbstractPresenter):
         self.logger.debug("Question shown")
 
     def build_project(self):
-        self["title"] = tk.Label(self.frame, text="Please verify project details:",wraplength=self.wraplength)
+        self["title"] = tk.Label(self.frame, text="Please verify project details:", wraplength=self.wraplength)
         self["title"].grid(row=0)
 
-        #All Concerning the coder
+        # All Concerning the coder
         self["lcoder"] = tk.Label(self.frame, text="Coder:")
         self["lcoder"].grid(row=1)
         self["ecoder"] = tk.Entry(self.frame)
         self["ecoder"].grid(row=2)
         if self.pb.coder is not None:
-            self["ecoder"].insert(0,str(self.pb.coder))
+            self["ecoder"].insert(0, str(self.pb.coder))
 
-        #All Concerning the config file
+        # All Concerning the config file
         self["lconfig"] = tk.Label(self.frame, text="Config File:")
         self["lconfig"].grid(row=3)
         self["econfig"] = tk.Entry(self.frame)
         self["econfig"].grid(row=4)
 
         if self.pb.config is not None:
-            self["econfig"].insert(0,str(self.pb.config))
+            self["econfig"].insert(0, str(self.pb.config))
 
-        #All Concernign data_file
+        # All Concernign data_file
         self["ldata"] = tk.Label(self.frame, text="Data File:")
         self["ldata"].grid(row=5)
         self["edata"] = tk.Entry(self.frame)
         self["edata"].grid(row=6)
-        if  self.pb.data is not None:
-            self["edata"].insert(0,str(self.pb.data))
+        if self.pb.data is not None:
+            self["edata"].insert(0, str(self.pb.data))
 
-        self["button"] = tk.Button(self.frame, text="Submit",command=self.__cleanup_build_project)
+        self["button"] = tk.Button(self.frame, text="Submit", command=self.__cleanup_build_project)
         self["button"].grid(row=7)
 
     def __cleanup_build_project(self):
@@ -165,14 +166,14 @@ class GUIPresenter(AbstractPresenter):
     def new_project_wizard(self, path=None):
         self.logger.info("Creating a new Project.")
 
-    def load_mainframe(self,project, *args, **kwargs):
+    def load_mainframe(self, project, *args, **kwargs):
         self.logger.info("Loading Mainframe.")
         self.project = project
 
     def run(self):
         self.logger.debug("Starting GUI")
         try:
-            super(GUIPresenter,self).run()
+            super(GUIPresenter, self).run()
             self.tk.mainloop()
         except:
             self.logger.critical("Unhandled Error:\n{}".format(traceback.format_exc()).rstrip())
@@ -183,4 +184,3 @@ class GUIPresenter(AbstractPresenter):
     def focus_next_window(event):
         event.widget.tk_focusNext().focus()
         return ("break")
-

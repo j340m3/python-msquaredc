@@ -152,7 +152,6 @@ class StatusBar(tk.Frame):  # pragma no cover
 
 class NavBar(tk.Frame):  # pragma no cover
     def __init__(self, master):
-
         tk.Frame.__init__(self, master)
         self.next = tk.Button(text="Next >", command=lambda: master.handle_callback("next"))
         self.prev = tk.Button(text="< Previous", command=lambda: master.handle_callback("prev"))
@@ -342,7 +341,7 @@ class WidgetField(tk.Frame):  # pragma no cover
         for i, element in enumerate(self.widgets):
             index = 2
             for k, j in enumerate(element.variables[1:]):
-                j.grid(column=index+k, row=i, in_=self)
+                j.grid(column=index + k, row=i, in_=self)
 
     def get_res_dict(self):
         return {element.label.cget('text'): element.variables[0].get() for element in self.widgets}

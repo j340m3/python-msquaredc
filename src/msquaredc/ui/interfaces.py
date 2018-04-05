@@ -54,12 +54,12 @@ class AbstractPresenter:
 
         # Init Menu
         self.menu = menuclass(_("Main Menu"), self)
-        submenu = menuclass( _("File"),self.menu)
+        submenu = menuclass(_("File"), self.menu)
         submenu.addEntry("New", None)
         submenu.addEntry("Open", None)
         submenu.addEntry("Exit", None)
         self.menu.addSubmenu(submenu)
-        submenu2 = menuclass( "Edit",self.menu)
+        submenu2 = menuclass("Edit", self.menu)
         submenu2.addEntry("Settings", None)
         self.menu.addSubmenu(submenu2)
 
@@ -74,13 +74,16 @@ class AbstractPresenter:
             self.get_coder()
 
     def get_coder(self):
-        self.logger.log(logging.ERROR, "Tried to ask for the coder, probably the child class hasn't implemented it yet!")
+        self.logger.log(logging.ERROR,
+                        "Tried to ask for the coder, probably the child class hasn't implemented it yet!")
 
     def get_config_file(self):
-        self.logger.log(logging.ERROR, "Tried to ask for the config file, probably the child class hasn't implemented it yet!")
+        self.logger.log(logging.ERROR,
+                        "Tried to ask for the config file, probably the child class hasn't implemented it yet!")
 
     def get_data_file(self):
-        self.logger.log(logging.ERROR, "Tried to ask for the data file, probably the child class hasn't implemented it yet!")
+        self.logger.log(logging.ERROR,
+                        "Tried to ask for the data file, probably the child class hasn't implemented it yet!")
 
     def add_label(self, key, callable_f):
         self.labels[key] = self.labels.get(key, []).append(callable_f)
