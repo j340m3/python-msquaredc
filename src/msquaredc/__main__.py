@@ -1,5 +1,5 @@
 """
-Entrypoint module, in case you use `python -mmsquaredc`.
+Entrypoint module, in case you use `python -m msquaredc`.
 
 
 Why does this file exist, and why __main__? For more info, read:

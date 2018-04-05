@@ -8,13 +8,26 @@ from itertools import repeat
 class FileNotFoundError(IOError):
     pass
 
-class ProjectBuilder(dict):
-    def __init__(self):
-        for i in ["data","questions","coder","file"]:
-            self[i] = None
+class ProjectBuilder(object):
+    def __init__(self,**kwargs):
+        if "data" in kwargs:
+            self.data = kwargs["data"]
+        else:
+            self.data = None
+        if "coder" in kwargs:
+            self.coder = kwargs["coder"]
+        else:
+            self.coder = None
+        if "config" in kwargs:
+            self.config = kwargs["config"]
+        else:
+            self.config = None
+
+    def finished(self):
+        return self.data is not None and self.coder is not None and self.config is not None
 
     def build(self):
-        return Project(**self)
+        return Project(data=self.data,coder=self.coder,config=self.config)
 
 class Project(object):
     def __init__(self, path=".",file="project.db",coder=None, *args, **kwargs):

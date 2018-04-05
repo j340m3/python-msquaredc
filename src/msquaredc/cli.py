@@ -20,44 +20,39 @@ import click, os
 
 from msquaredc.project import FileNotFoundError
 from msquaredc.project import Project
+from msquaredc.project import ProjectBuilder
 from msquaredc.ui.interfaces import AbstractMenu
 from msquaredc.ui.interfaces import AbstractPresenter
 
 
 @click.command()
 @click.option('--config-file', default=None, help="Location of the project configuration file.")
-@click.option("--data-file", default="data.txt", help="Location of the data file.")
+@click.option("--data-file", default=None, help="Location of the data file.")
 @click.option("--user-interface", default="gui", help="User interface to start. [tui | gui | web]")
 @click.option("--loglevel", default="warning", help="On which level to log. [debug | info | warning | error | critical]")
 @click.option("--logfile", default="logfile.log", help="Where to log.")
 @click.option("--coder", default=None, help="Current coder.")
-def main(config_file=None, data_file="data.txt", user_interface="gui", loglevel="warning", logfile="logfile.log",coder = None):
+def main(config_file=None, data_file=None, user_interface="gui", loglevel="warning", logfile="logfile.log",coder = None):
     """Command line interface to msquaredc."""
     setup_logging(loglevel,logfile)
-    check_file(config_file)
-    check_file(data_file)
     presenter = None
+
+    pb = ProjectBuilder(data=data_file,config=config_file,coder=coder)
+
     if user_interface == "gui":
         from msquaredc.ui.gui.presenter import GUIPresenter
         from msquaredc.ui.gui.menu import GUIMenu
-        presenter = GUIPresenter(menuclass=GUIMenu)
+        presenter = GUIPresenter(menuclass=GUIMenu,projectbuilder=pb)
     elif user_interface == "tui":
         from msquaredc.ui.tui.presenter import TUIPresenter
         from msquaredc.ui.tui.menu import TUIMenu
-        presenter = TUIPresenter(menuclass=TUIMenu)
+        presenter = TUIPresenter(menuclass=TUIMenu,projectbuilder=pb)
     elif user_interface == "web":
         print("NotSupportedYet")
+        exit(0)
     else:
-        presenter = AbstractPresenter()
-    if config_file is None:
-        project = presenter.new_project_wizard()
-    else:
-        try:
-            #coder,disamb = presenter.getCoder()
-            project = Project(data=data_file, questions=config_file, coder=coder)
-        except FileNotFoundError:
-            project = presenter.new_project_wizard(path=config_file, questions=config_file)
-    presenter.load_mainframe(project)
+        presenter = AbstractPresenter(projectbuilder=pb)
+
     presenter.run()
 
 def setup_logging(loglevel,logfile):
@@ -78,7 +73,7 @@ def setup_logging(loglevel,logfile):
     logging.getLogger("").addHandler(console)
 
 def check_file(filename):
-    if not os.path.exists(filename):
+    if filename is None or not os.path.exists(filename):
         logging.log(logging.CRITICAL,"Couldn't find the file '{}'.".format(filename))
         import sys
         sys.exit(1)

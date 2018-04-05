@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
 from sys import version_info
 from msquaredc.ui.interfaces import AbstractPresenter
+import traceback
+import os
 
 if version_info[0] == 2:
     # We are using Python 2.x
     import Tkinter as tk
     import ttk
+    import tkFileDialog as filedialog
 
 elif version_info[0] == 3:
     # We are using Python 3.x
     import tkinter as tk
     from tkinter import ttk
+    import tkinter.filedialog as filedialog
+
+
 
 def center(toplevel):
     toplevel.update_idletasks()
@@ -28,10 +34,22 @@ class GUIPresenter(AbstractPresenter):
         super(GUIPresenter, self).__init__(name=__name__, *args, **kwargs)
         self.logger.info("Building the GUI presenter.")
         self.init_tk()
+        self.args = args
+        self.kwargs = kwargs
         self.logger.info("The GUI presenter has been build.")
+
+    def __setitem__(self, key, value):
+        self.widgets.__setitem__(key,value)
+
+    def __getitem__(self, item):
+        return self.widgets.__getitem__(item)
+
+    def __iter__(self):
+        return self.widgets.__iter__()
 
     def init_tk(self):
         self.logger.info("Initializing Tk")
+        self.widgets = dict()
         self.tk.title("M²C")
         self.tk.geometry("640x480")
         self.tk.style = ttk.Style()
@@ -43,26 +61,91 @@ class GUIPresenter(AbstractPresenter):
         self.__is_fullscreen = False
         self.logger.info("Tk initialized")
         center(self.tk)
+        top = self.tk.winfo_toplevel()
+        top.rowconfigure(0,weight=1)
+        top.columnconfigure(0,weight=1)
         self.frame = tk.Frame(self.tk)
         self.frame.place(relx=0.5, rely=0.5, anchor='center')
-        self.ask_coder()
+        self.frame.columnconfigure(0,weight=1)
+        self.frame.rowconfigure(0,weight=1)
+
+    @property
+    def wraplength(self):
+        return self.tk.winfo_width()
 
     def show_question(self, question):
-        pass
+        self.logger.debug("Showing question")
+        self.logger.debug("Question shown")
 
-    def ask_coder(self):
+    def build_project(self):
+        self["title"] = tk.Label(self.frame, text="Please verify project details:",wraplength=self.wraplength)
+        self["title"].grid(row=0)
+
+        #All Concerning the coder
+        self["lcoder"] = tk.Label(self.frame, text="Coder:")
+        self["lcoder"].grid(row=1)
+        self["ecoder"] = tk.Entry(self.frame)
+        self["ecoder"].grid(row=2)
+        if self.pb.coder is not None:
+            self["ecoder"].insert(0,str(self.pb.coder))
+
+        #All Concerning the config file
+        self["lconfig"] = tk.Label(self.frame, text="Config File:")
+        self["lconfig"].grid(row=3)
+        self["econfig"] = tk.Entry(self.frame)
+        self["econfig"].grid(row=4)
+
+        if self.pb.config is not None:
+            self["econfig"].insert(0,str(self.pb.config))
+
+        #All Concernign data_file
+        self["ldata"] = tk.Label(self.frame, text="Data File:")
+        self["ldata"].grid(row=5)
+        self["edata"] = tk.Entry(self.frame)
+        self["edata"].grid(row=6)
+        if  self.pb.data is not None:
+            self["edata"].insert(0,str(self.pb.data))
+
+        self["button"] = tk.Button(self.frame, text="Submit",command=self.__cleanup_build_project)
+        self["button"].grid(row=7)
+
+    def __cleanup_build_project(self):
+        config_file = self["econfig"].get()
+        data_file = self["edata"].get()
+        done = True
+        if os.path.isfile(config_file):
+            self["econfig"].config(highlightbackground="GREEN")
+        else:
+            done = False
+            self["econfig"].config(highlightbackground="RED")
+
+        if done:
+            for i in self:
+                self[i].destroy()
+
+    def __cleanup_coder(self):
+        for child in self.frame.winfo_children():
+            child.destroy()
+
+    def get_coder(self):
+        self.logger.debug("Asking coder")
         label = tk.Label(self.frame, text="Please insert coder:")
         label.grid(row=0)
         e1 = tk.Entry(self.frame)
+        e1.bind("<Tab>", self.focus_next_window)
         e1.grid(row=1, column=0)
-        b1 = tk.Button(self.frame, text="Save", command=self.cleanup_ask_coder)
+        b1 = tk.Button(self.frame, text="Save", command=self.__cleanup_get_coder)
+        b1.bind("<Tab>", self.focus_next_window)
         b1.grid(row=1, column=1)
 
-    def cleanup_ask_coder(self):
+    def __cleanup_get_coder(self):
         for child in self.frame.winfo_children():
             if type(child) is tk.Entry:
-                self.coder = child.get()
+                self.pb["coder"] = child.get()
             child.destroy()
+
+    def get_config_file(self):
+        self.pb["config_file"] = filedialog.askopenfilename()
 
     def toggle_fullscreen(self, event=None):
         self.logger.debug("Toggling Fullscreen to {}.".format(not self.__is_fullscreen))
@@ -89,20 +172,15 @@ class GUIPresenter(AbstractPresenter):
     def run(self):
         self.logger.debug("Starting GUI")
         try:
+            super(GUIPresenter,self).run()
             self.tk.mainloop()
-        except Exception as e:
-            self.logger.critical("Unhandled Error:{}".format(str(e)))
+        except:
+            self.logger.critical("Unhandled Error:\n{}".format(traceback.format_exc()).rstrip())
         else:
             self.logger.debug("Leaving GUI normally.")
 
-    def getCoder(self):
-        master = tk.Tk("Coder")
-        tk.Label(master, text="Please insert coder name:").grid(row=0)
-        e1 = tk.Entry(master)
-        e1.grid(row=0,column=1)
-        b1 = tk.Button(master,text="Save",command=master.destroy)
-        b1.grid(row=0,column=2)
-        master.call('wm', 'attributes', '.', '-topmost', '1')
-        center(master)
-        master.mainloop()
-        return e1.get(),False
+    @staticmethod
+    def focus_next_window(event):
+        event.widget.tk_focusNext().focus()
+        return ("break")
+
