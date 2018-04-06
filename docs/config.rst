@@ -2,10 +2,9 @@
 The Config File
 ===============
 
-This is where the magic happens. Here is a sample file which I will walk you through so that you will be able to create your own awfterwards.
-
+This is where the magic happens. Here is a sample file which I will walk you through so that you will be able to create your own awfterwards. 
     ::
-
+    
         questions:
           -   text: q1
               coding:
