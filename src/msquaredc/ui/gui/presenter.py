@@ -175,32 +175,57 @@ class GUIPresenter(AbstractPresenter):
     def load_mainframe(self, project, *args, **kwargs):
         self.logger.info("Loading Mainframe.")
         self.project = project
-        self.current_question = project.__next__()
         self.show_question()
+
+    def show_end(self):
+        self["info"] = tk.Label(self.frame, text="Finished Coding!", wraplength=self.wraplength)
+        self["info"].grid(row=0)
+        self["export"] = tk.Button(self.frame, text="Export!", command=self.project.export)
+        self["export"].grid(row=1, padx=5, pady=5, ipadx=10, ipady=10)
 
     def show_question(self):
         self.logger.debug("Showing question")
+        try:
+            self.current_question = self.project.__next__()
+        except StopIteration:
+            self.show_end()
+        else:
+            self["question"] = tk.Label(self.frame, text=self.current_question.question, wraplength=self.wraplength,
+                                        font=("Sans", 16, "bold"))
+            self["question"].grid(row=0, padx=5, pady=5)
+            self["answer"] = tk.Label(self.frame, text=self.current_question.answer, wraplength=self.wraplength,
+                                      font=("Sans", 16, "bold"))
+            self["answer"].grid(row=1, padx=5, pady=5)
+            self["helper"] = tk.Frame(self.frame)
+            self["helper"].grid(row=2)
+            for i, j in enumerate(self.current_question.coding_questions):
+                self["l" + str(i)] = tk.Label(self["helper"], text=j, font=("Sans", 20))
+                self["l" + str(i)].grid(row=2 * (i), column=0, padx=5, pady=5)
+                self["nl" + str(i)] = tk.Label(self["helper"], text="Notes", font=("Sans", 20))
+                self["nl" + str(i)].grid(row=2 * (i), column=1, padx=5, pady=5)
+                self["e" + str(i)] = tk.Entry(self["helper"], font=("Sans", 20))
+                self["e" + str(i)].grid(row=2 * i + 1, column=0, padx=5, pady=5)
+                self["ne" + str(i)] = tk.Entry(self["helper"], font=("Sans", 20))
+                self["ne" + str(i)].grid(row=2 * i + 1, column=1, padx=5, pady=5)
 
-        self["question"] = tk.Label(self.frame, text=self.current_question.question, wraplength=self.wraplength)
-        self["question"].grid(row=0)
-        self["answer"] = tk.Label(self.frame, text=self.current_question.answer, wraplength=self.wraplength)
-        self["answer"].grid(row=1)
+            self["button"] = tk.Button(self.tk, text="Next >", command=self.__cleanup_answer_question)
+            self["button"].grid(row=2, column=1, padx=5, pady=5, ipadx=15)
 
-        for i, j in enumerate(self.current_question.coding_questions):
-            self["l" + str(i)] = tk.Label(self.frame, text=j)
-            self["l" + str(i)].grid(row=2 * (i + 1))
-            self["e" + str(i)] = tk.Entry(self.frame)
-            self["e" + str(i)].grid(row=2 * (i + 1) + 1)
-
-        self["button"] = tk.Button(self.frame, text="Submit", command=self.__cleanup_answer_question)
-        self["button"].grid(row=2 * (i + 2))
-
-        self.logger.debug("Question shown")
+            self.logger.debug("Question shown")
 
     def __cleanup_answer_question(self):
         done = True
 
-        # Some not None Checks
+        for element in self:
+            if element[0] == "e":
+                content = self[element].get()
+                if content is "":
+                    done = False
+                    self[element].config(bg="#ffe0e0")
+                else:
+                    self[element].config(bg="#e0ffe0")
+                    index = int(element[1:])
+                    self.current_question[self.current_question.coding_questions[index]] = content
 
         if done:
             for i in self:
