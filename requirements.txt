@@ -1,4 +1,4 @@
 PyYAML==3.12
-click
+click==6.7
 -e .
 
