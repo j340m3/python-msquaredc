@@ -123,6 +123,7 @@ class Project(object):
             return str(res[0])
         return str(None)
 
+    """
     def init_dict(self, init_kwargs, **kwargs):
         for i in kwargs:
             if i not in self.state:
@@ -130,7 +131,7 @@ class Project(object):
                     self.state[i] = init_kwargs[i]
                 else:
                     self.state[i] = kwargs[i]
-
+    """
     @staticmethod
     def handleCSV(file, separator):
         res = []
@@ -234,7 +235,6 @@ class Project(object):
                     for i in self.get_whole_table(question):
                         column = self.get_columns(question)
                         coding_questions = dict(zip(column, i))
-                        print(coding_questions["id"],individual["id"])
                         if coding_questions["id"] == individual["id"]-1:
                             for coding_question in coding_questions:
                                 if coding_question != "id" and coding_question != "coder":
