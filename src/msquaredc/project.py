@@ -43,7 +43,6 @@ class Project(object):
             self.coder = coder
         else:
             raise Exception("Please define the coder!")
-        print("End init")
 
     def init_db(self, path, *args, **kwargs):
         c = self.conn.cursor()
@@ -81,9 +80,8 @@ class Project(object):
             c.execute("""CREATE TABLE IF NOT EXISTS question_assoc (question text, coding text)""")
             with open(os.path.join(path, kwargs["config"])) as file:
                 questions = yaml.load(file)
-                print(questions)
-            for question in questions["questions"]:
 
+            for question in questions["questions"]:
                 qquery = ", ".join(
                     [self.__transform_column(i["criteria"]) + " TEXT" for i in question["coding"]] + ["coder TEXT"])
                 c.execute("""CREATE TABLE IF NOT EXISTS {} (id INTEGER PRIMARY KEY, {})""".format(
@@ -236,7 +234,8 @@ class Project(object):
                     for i in self.get_whole_table(question):
                         column = self.get_columns(question)
                         coding_questions = dict(zip(column, i))
-                        if coding_questions["id"] == individual["id"]:
+                        print(coding_questions["id"],individual["id"])
+                        if coding_questions["id"] == individual["id"]-1:
                             for coding_question in coding_questions:
                                 if coding_question != "id" and coding_question != "coder":
                                     file.write("\t".join([str(individual[i]) for i in self.get_columns("individuals") if

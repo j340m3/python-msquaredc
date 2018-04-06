@@ -10,6 +10,7 @@ include .cookiecutterrc
 include .editorconfig
 include .isort.cfg
 
+include CODE_OF_CONDUCT.md
 include AUTHORS.rst
 include CHANGELOG.rst
 include CONTRIBUTING.rst
