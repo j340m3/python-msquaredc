@@ -190,16 +190,23 @@ class GUIPresenter(AbstractPresenter):
         except StopIteration:
             self.show_end()
         else:
-            self["question"] = tk.Label(self.frame, text=self.current_question.question, wraplength=self.wraplength)
-            self["question"].grid(row=0)
-            self["answer"] = tk.Label(self.frame, text=self.current_question.answer, wraplength=self.wraplength)
-            self["answer"].grid(row=1)
-
+            self["question"] = tk.Label(self.frame, text=self.current_question.question, wraplength=self.wraplength,
+                                        font=("Sans", 16, "bold"))
+            self["question"].grid(row=0, padx=5, pady=5)
+            self["answer"] = tk.Label(self.frame, text=self.current_question.answer, wraplength=self.wraplength,
+                                      font=("Sans", 16, "bold"))
+            self["answer"].grid(row=1, padx=5, pady=5)
+            self["helper"] = tk.Frame(self.frame)
+            self["helper"].grid(row=2)
             for i, j in enumerate(self.current_question.coding_questions):
-                self["l" + str(i)] = tk.Label(self.frame, text=j)
-                self["l" + str(i)].grid(row=2 * (i + 1))
-                self["e" + str(i)] = tk.Entry(self.frame)
-                self["e" + str(i)].grid(row=2 * (i + 1) + 1)
+                self["l" + str(i)] = tk.Label(self["helper"], text=j, font=("Sans", 20))
+                self["l" + str(i)].grid(row=2 * (i), column=0, padx=5, pady=5)
+                self["nl" + str(i)] = tk.Label(self["helper"], text="Notes", font=("Sans", 20))
+                self["nl" + str(i)].grid(row=2 * (i), column=1, padx=5, pady=5)
+                self["e" + str(i)] = tk.Entry(self["helper"], font=("Sans", 20))
+                self["e" + str(i)].grid(row=2 * i + 1, column=0, padx=5, pady=5)
+                self["ne" + str(i)] = tk.Entry(self["helper"], font=("Sans", 20))
+                self["ne" + str(i)].grid(row=2 * i + 1, column=1, padx=5, pady=5)
 
             self["button"] = tk.Button(self.tk, text="Next >", command=self.__cleanup_answer_question)
             self["button"].grid(row=2, column=1, padx=5, pady=5, ipadx=15)
