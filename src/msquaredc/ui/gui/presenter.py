@@ -180,8 +180,8 @@ class GUIPresenter(AbstractPresenter):
     def show_end(self):
         self["info"] = tk.Label(self.frame, text="Finished Coding!", wraplength=self.wraplength)
         self["info"].grid(row=0)
-        self["export"] = tk.Button(self.frame, text="Export!",command=self.project.export)
-        self["export"].grid(row=1, padx=5,pady=5,ipadx=10,ipady=10)
+        self["export"] = tk.Button(self.frame, text="Export!", command=self.project.export)
+        self["export"].grid(row=1, padx=5, pady=5, ipadx=10, ipady=10)
 
     def show_question(self):
         self.logger.debug("Showing question")
@@ -202,7 +202,7 @@ class GUIPresenter(AbstractPresenter):
                 self["e" + str(i)].grid(row=2 * (i + 1) + 1)
 
             self["button"] = tk.Button(self.tk, text="Next >", command=self.__cleanup_answer_question)
-            self["button"].grid(row=2,column=1, padx=5,pady=5, ipadx=15)
+            self["button"].grid(row=2, column=1, padx=5, pady=5, ipadx=15)
 
             self.logger.debug("Question shown")
 
