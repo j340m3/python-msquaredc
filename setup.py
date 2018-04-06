@@ -25,7 +25,7 @@ def read(*names, **kwargs):
 
 buildnr = "."
 try:
-    buildnr += subprocess.check_output(['git', 'rev-list', '--count', 'master']).decode('latin-1').strip()
+    buildnr += subprocess.check_output(['git', 'rev-list', '--count', '--all']).decode('latin-1').strip()
 except Exception:
     buildnr = ""
 
