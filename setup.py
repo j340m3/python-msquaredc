@@ -22,6 +22,7 @@ def read(*names, **kwargs):
         encoding=kwargs.get('encoding', 'utf8')
     ).read()
 
+#subprocess.check_output(['git', 'show', '-s', '--format=%ct','HEAD^{commit}']).decode('latin-1').strip()
 
 buildnr = "."
 try:
