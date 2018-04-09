@@ -1,11 +1,4 @@
-from sys import version_info
-
-if version_info[0] == 2:
-    # We are using Python 2.x
-    import Tkinter as tk
-elif version_info[0] == 3:
-    # We are using Python 3.x
-    import tkinter as tk
+import tkinter
 
 
 class MyWidget:  # pragma : no cover
@@ -20,16 +13,16 @@ class TrueFalseWidget(MyWidget):  # pragma : no cover
         self.labelw = None
 
     def draw(self, root, line):
-        self.widget = tk.Checkbutton(root)
-        self.widget.grid(column=1, row=line, sticky=tk.NSEW)
-        self.labelw = tk.Label(root, text=self.label, justify=tk.LEFT)
-        self.labelw.grid(column=2, row=line, sticky=tk.NSEW)
+        self.widget = tkinter.Checkbutton(root)
+        self.widget.grid(column=1, row=line, sticky=tkinter.NSEW)
+        self.labelw = tkinter.Label(root, text=self.label, justify=tkinter.LEFT)
+        self.labelw.grid(column=2, row=line, sticky=tkinter.NSEW)
 
 
-class ScaleWidget(tk.Frame):  # pragma : no cover
+class ScaleWidget(tkinter.Frame):  # pragma : no cover
     def __init__(self, master, label, min_, max_, redundancy=0):
         super(ScaleWidget, self).__init__(master)
         self.min = min_
         self.max = max_
-        self.variables = [tk.Entry(master, width=2) for _ in range(redundancy + 1)]
-        self.label = tk.Label(master, text=label)
+        self.variables = [tkinter.Entry(master, width=2) for _ in range(redundancy + 1)]
+        self.label = tkinter.Label(master, text=label)

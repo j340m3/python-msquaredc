@@ -1,21 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
 import traceback
-from sys import version_info
+import tkinter
+import tkinter.ttk
 
 from msquaredc.ui.interfaces import AbstractPresenter
 
-if version_info[0] == 2:
-    # We are using Python 2.x
-    import Tkinter as tk
-    import ttk
-    import tkFileDialog as filedialog
-
-elif version_info[0] == 3:
-    # We are using Python 3.x
-    import tkinter as tk
-    from tkinter import ttk
-    import tkinter.filedialog as filedialog
 
 
 def center(toplevel):
@@ -30,7 +20,7 @@ def center(toplevel):
 
 class GUIPresenter(AbstractPresenter):
     def __init__(self, *args, **kwargs):
-        self.tk = tk.Tk()
+        self.tk = tkinter.Tk()
         self.parent = None
         super(GUIPresenter, self).__init__(name=__name__, *args, **kwargs)
         self.logger.info("Building the GUI presenter.")
@@ -56,7 +46,7 @@ class GUIPresenter(AbstractPresenter):
         self.widgets = dict()
         self.tk.title("M²C")
         self.tk.geometry("640x480")
-        self.tk.style = ttk.Style()
+        self.tk.style = tkinter.ttk.Style()
         self.tk.style.theme_use("clam")
         self.logger.debug("Loading Keybindings")
         self.tk.bind("<F11>", self.toggle_fullscreen)
@@ -68,7 +58,7 @@ class GUIPresenter(AbstractPresenter):
         top = self.tk.winfo_toplevel()
         top.rowconfigure(0, weight=1)
         top.columnconfigure(0, weight=1)
-        self.frame = tk.Frame(self.tk)
+        self.frame = tkinter.Frame(self.tk)
         self.frame.place(relx=0.5, rely=0.5, anchor='center')
         self.frame.columnconfigure(0, weight=1)
         self.frame.rowconfigure(0, weight=1)
@@ -78,52 +68,43 @@ class GUIPresenter(AbstractPresenter):
         return self.tk.winfo_width()
 
     def build_project(self):
-        self["title"] = tk.Label(self.frame, text="Please verify project details:", wraplength=self.wraplength)
+        self["title"] = tkinter.Label(self.frame, text="Please verify project details:", wraplength=self.wraplength)
         self["title"].grid(row=0)
 
         # All Concerning the coder
-        self["lcoder"] = tk.Label(self.frame, text="Coder:")
+        self["lcoder"] = tkinter.Label(self.frame, text="Coder:")
         self["lcoder"].grid(row=1)
-        self["ecoder"] = tk.Entry(self.frame)
+        self["ecoder"] = tkinter.Entry(self.frame)
         self["ecoder"].grid(row=2)
         if self.pb.coder is not None:
             self["ecoder"].insert(0, str(self.pb.coder))
 
         # All Concerning the config file
-        self["lconfig"] = tk.Label(self.frame, text="Config File:")
+        self["lconfig"] = tkinter.Label(self.frame, text="Config File:")
         self["lconfig"].grid(row=3)
-        self["econfig"] = tk.Entry(self.frame)
+        self["econfig"] = tkinter.Entry(self.frame)
         self["econfig"].grid(row=4)
 
         if self.pb.config is not None:
             self["econfig"].insert(0, str(self.pb.config))
 
         # All Concernign data_file
-        self["ldata"] = tk.Label(self.frame, text="Data File:")
+        self["ldata"] = tkinter.Label(self.frame, text="Data File:")
         self["ldata"].grid(row=5)
-        self["edata"] = tk.Entry(self.frame)
+        self["edata"] = tkinter.Entry(self.frame)
         self["edata"].grid(row=6)
         if self.pb.data is not None:
             self["edata"].insert(0, str(self.pb.data))
 
-        self["button"] = tk.Button(self.frame, text="Submit", command=self.__cleanup_build_project)
+        self["button"] = tkinter.Button(self.frame, text="Submit", command=self.__cleanup_build_project)
         self["button"].grid(row=7)
 
     def __cleanup_build_project(self):
         config_file = self["econfig"].get()
         data_file = self["edata"].get()
         done = True
-        if os.path.isfile(config_file):
-            self["econfig"].config(highlightbackground="GREEN")
-        else:
-            done = False
-            self["econfig"].config(highlightbackground="RED")
-        if os.path.isfile(data_file):
-            self["edata"].config(highlightbackground="GREEN")
-        else:
-            done = False
-            self["edata"].config(highlightbackground="RED")
-
+        done = done and self.feedback_file_correctness("econfig",config_file)
+        done = done and self.feedback_file_correctness("edata",data_file)
         if done:
             for i in self:
                 self[i].destroy()
@@ -147,7 +128,7 @@ class GUIPresenter(AbstractPresenter):
 
     def __cleanup_get_coder(self):
         for child in self.frame.winfo_children():
-            if type(child) is tk.Entry:
+            if type(child) is tkinter.Entry:
                 self.pb["coder"] = child.get()
             child.destroy()
 
@@ -178,9 +159,9 @@ class GUIPresenter(AbstractPresenter):
         self.show_question()
 
     def show_end(self):
-        self["info"] = tk.Label(self.frame, text="Finished Coding!", wraplength=self.wraplength)
+        self["info"] = tkinter.Label(self.frame, text="Finished Coding!", wraplength=self.wraplength)
         self["info"].grid(row=0)
-        self["export"] = tk.Button(self.frame, text="Export!", command=self.project.export)
+        self["export"] = tkinter.Button(self.frame, text="Export!", command=self.project.export)
         self["export"].grid(row=1, padx=5, pady=5, ipadx=10, ipady=10)
 
     def show_question(self):
@@ -190,26 +171,26 @@ class GUIPresenter(AbstractPresenter):
         except StopIteration:
             self.show_end()
         else:
-            self["question"] = tk.Label(self.frame, text=self.current_question.question, wraplength=self.wraplength,
-                                        font=("Sans", 16, "bold"))
+            self["question"] = tkinter.Label(self.frame, text=self.current_question.question, wraplength=self.wraplength,
+                                             font=("Sans", 16, "bold"))
             self["question"].grid(row=0, padx=5, pady=5)
-            self["answer"] = tk.Label(self.frame, text=self.current_question.answer, wraplength=self.wraplength,
-                                      font=("Sans", 16, "bold"))
+            self["answer"] = tkinter.Label(self.frame, text=self.current_question.answer, wraplength=self.wraplength,
+                                           font=("Sans", 16, "bold"))
             self["answer"].grid(row=1, padx=5, pady=5)
-            self["helper"] = tk.Frame(self.frame)
+            self["helper"] = tkinter.Frame(self.frame)
             self["helper"].grid(row=2)
             for i, j in enumerate(self.current_question.coding_questions):
-                self["l" + str(i)] = tk.Label(self["helper"], text=j, font=("Sans", 20))
+                self["l" + str(i)] = tkinter.Label(self["helper"], text=j, font=("Sans", 20))
                 self["l" + str(i)].grid(row=2 * (i), column=0, padx=5, pady=5)
-                self["nl" + str(i)] = tk.Label(self["helper"], text="Notes", font=("Sans", 20))
+                self["nl" + str(i)] = tkinter.Label(self["helper"], text="Notes", font=("Sans", 20))
                 self["nl" + str(i)].grid(row=2 * (i), column=1, padx=5, pady=5)
-                self["e" + str(i)] = tk.Entry(self["helper"], font=("Sans", 20))
+                self["e" + str(i)] = tkinter.Entry(self["helper"], font=("Sans", 20))
                 self["e" + str(i)].grid(row=2 * i + 1, column=0, padx=5, pady=5)
-                self["ne" + str(i)] = tk.Entry(self["helper"], font=("Sans", 20))
+                self["ne" + str(i)] = tkinter.Entry(self["helper"], font=("Sans", 20))
                 self["ne" + str(i)].grid(row=2 * i + 1, column=1, padx=5, pady=5)
-            self["previous"] = tk.Button(self.tk, text="< Previous")
+            self["previous"] = tkinter.Button(self.tk, text="< Previous")
             self["previous"].grid(row=2, column=0, padx=5, pady=5, ipadx=15)
-            self["next"] = tk.Button(self.tk, text="Next >", command=self.__cleanup_answer_question)
+            self["next"] = tkinter.Button(self.tk, text="Next >", command=self.__cleanup_answer_question)
             self["next"].grid(row=2, column=1, padx=5, pady=5, ipadx=15)
 
             self.logger.debug("Question shown")
@@ -247,3 +228,11 @@ class GUIPresenter(AbstractPresenter):
     def focus_next_window(event):
         event.widget.tk_focusNext().focus()
         return ("break")
+
+    def feedback_file_correctness(self, label, filename):
+        if os.path.isfile(filename):
+            self["edata"].config(highlightbackground="GREEN")
+            return True
+        else:
+            self["edata"].config(highlightbackground="RED")
+        return False
