@@ -5,7 +5,6 @@ from __future__ import print_function
 
 import io
 import re
-import subprocess
 from glob import glob
 from os import environ
 from os.path import basename
@@ -29,17 +28,18 @@ def read(*names, **kwargs):
 
 def get_buildnr():
     buildnr = "."
+    """
     try:
         buildnr += subprocess.check_output(['git', 'show', '-s', '--format=%ct', 'HEAD^{commit}']).decode(
             'latin-1').strip()
     except Exception:
         buildnr = ""
+    """
+    tmp = environ.get("TRAVIS_BUILD_NUMBER", None)
+    if tmp:
+        buildnr += tmp
     else:
-        tmp = environ.get("TRAVIS_BUILD_NUMBER", None)
-        if tmp:
-            buildnr += tmp
-        else:
-            buildnr = ""
+        buildnr = ""
     return buildnr
 
 
