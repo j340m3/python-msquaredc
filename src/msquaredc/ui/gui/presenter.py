@@ -207,9 +207,10 @@ class GUIPresenter(AbstractPresenter):
                 self["e" + str(i)].grid(row=2 * i + 1, column=0, padx=5, pady=5)
                 self["ne" + str(i)] = tk.Entry(self["helper"], font=("Sans", 20))
                 self["ne" + str(i)].grid(row=2 * i + 1, column=1, padx=5, pady=5)
-
-            self["button"] = tk.Button(self.tk, text="Next >", command=self.__cleanup_answer_question)
-            self["button"].grid(row=2, column=1, padx=5, pady=5, ipadx=15)
+            self["previous"] = tk.Button(self.tk, text="< Previous")
+            self["previous"].grid(row=2, column=0, padx=5, pady=5, ipadx=15)
+            self["next"] = tk.Button(self.tk, text="Next >", command=self.__cleanup_answer_question)
+            self["next"].grid(row=2, column=1, padx=5, pady=5, ipadx=15)
 
             self.logger.debug("Question shown")
 

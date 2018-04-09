@@ -5,8 +5,8 @@ from __future__ import print_function
 
 import io
 import re
-import subprocess
 from glob import glob
+from os import environ
 from os.path import basename
 from os.path import dirname
 from os.path import join
@@ -22,18 +22,30 @@ def read(*names, **kwargs):
         encoding=kwargs.get('encoding', 'utf8')
     ).read()
 
-# subprocess.check_output(['git', 'show', '-s', '--format=%ct','HEAD^{commit}']).decode('latin-1').strip()
+
+# subprocess.check_output(['git', 'rev-list', '--count', 'HEAD']).decode('latin-1').strip()
 
 
-buildnr = "."
-try:
-    buildnr += subprocess.check_output(['git', 'rev-list', '--count', 'HEAD']).decode('latin-1').strip()
-except Exception:
-    buildnr = ""
+def get_buildnr():
+    buildnr = "."
+    """
+    try:
+        buildnr += subprocess.check_output(['git', 'show', '-s', '--format=%ct', 'HEAD^{commit}']).decode(
+            'latin-1').strip()
+    except Exception:
+        buildnr = ""
+    """
+    tmp = environ.get("TRAVIS_BUILD_NUMBER", None)
+    if tmp:
+        buildnr += tmp
+    else:
+        buildnr = ""
+    return buildnr
+
 
 setup(
     name='msquaredc',
-    version='0.1.1{}'.format(buildnr),
+    version='0.1.1{}'.format(get_buildnr()),
     license='BSD',
     description='A Tool for more independent data coding.',
     long_description='%s\n%s' % (
