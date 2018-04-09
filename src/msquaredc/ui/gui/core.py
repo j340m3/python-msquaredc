@@ -1,6 +1,7 @@
 import logging
 import os
-from sys import version_info
+import tkinter
+import tkinter.filedialog
 
 import yaml
 
@@ -8,24 +9,15 @@ from msquaredc import persistence
 from msquaredc import utils
 from msquaredc.ui.gui.widgets import ScaleWidget
 
-if version_info[0] == 2:
-    # We are using Python 2.x
-    import Tkinter as tk
-    import tkFileDialog as filedialog
-elif version_info[0] == 3:
-    # We are using Python 3.x
-    import tkinter as tk
-    from tkinter import filedialog
-
 
 class MainFrame(object):  # pragma no cover
     def __init__(self, widgets):
         self.widgets = widgets
-        self.tk = tk.Tk()
+        self.tk = tkinter.Tk()
         self.tk.title("msquaredc")
         self.q = self.a = None
         self.__is_fullscreen = False
-        self.frame = tk.Frame(self.tk)
+        self.frame = tkinter.Frame(self.tk)
         self.frame.grid(row=0, column=0)
         self.init_keybindings()
         self.init_menubar()
@@ -44,10 +36,10 @@ class MainFrame(object):  # pragma no cover
         pass
 
     def init_menubar(self):
-        menubar = tk.Menu(self.tk)
+        menubar = tkinter.Menu(self.tk)
         self.tk.config(menu=menubar)
 
-        fileMenu = tk.Menu(menubar)
+        fileMenu = tkinter.Menu(menubar)
 
         fileMenu.add_command(label="Open", command=persistence.open_file)
         fileMenu.add_command(label="Save", command=self.save_file)
@@ -58,10 +50,10 @@ class MainFrame(object):  # pragma no cover
         menubar.add_cascade(label="File", underline=0, menu=fileMenu)
 
     def showResults(self, q, a):
-        self.q = tk.Label(self.tk, text=q)
-        self.q.grid(column=2, row=1, sticky=tk.NSEW, columnspan=1)
-        self.a = tk.Label(self.tk, text=a)
-        self.a.grid(column=2, row=2, sticky=tk.NSEW, columnspan=1)
+        self.q = tkinter.Label(self.tk, text=q)
+        self.q.grid(column=2, row=1, sticky=tkinter.NSEW, columnspan=1)
+        self.a = tkinter.Label(self.tk, text=a)
+        self.a.grid(column=2, row=2, sticky=tkinter.NSEW, columnspan=1)
 
     def init_content(self):
         for i, j in enumerate(self.widgets):
@@ -88,7 +80,7 @@ class MainFrame(object):  # pragma no cover
         return "break"
 
     def save_file(self):
-        filename = filedialog.asksaveasfilename()
+        filename = tkinter.filedialog.asksaveasfilename()
         try:
             file = open(filename, 'w')
             self.open_files["save"].append(file)
@@ -104,9 +96,9 @@ class MainFrame(object):  # pragma no cover
         self.tk.mainloop()
 
 
-class MainApplication(tk.Frame):  # pragma no cover
+class MainApplication(tkinter.Frame):  # pragma no cover
     def __init__(self, parent, *args, **kwargs):
-        tk.Frame.__init__(self, parent, *args, **kwargs)
+        tkinter.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
         self.callbacks = {}
         self.statusbar = StatusBar(self)
@@ -139,32 +131,32 @@ class MainApplication(tk.Frame):  # pragma no cover
         self.statusbar.variable.set(string)
 
 
-class StatusBar(tk.Frame):  # pragma no cover
+class StatusBar(tkinter.Frame):  # pragma no cover
     def __init__(self, master):
-        tk.Frame.__init__(self, master)
-        self.variable = tk.StringVar()
-        self.label = tk.Label(self, bd=1, relief=tk.SUNKEN, anchor=tk.W,
-                              textvariable=self.variable,
-                              font=('arial', 10, 'normal'))
+        tkinter.Frame.__init__(self, master)
+        self.variable = tkinter.StringVar()
+        self.label = tkinter.Label(self, bd=1, relief=tkinter.SUNKEN, anchor=tkinter.W,
+                                   textvariable=self.variable,
+                                   font=('arial', 10, 'normal'))
         self.variable.set('Status Bar')
-        self.label.pack(fill=tk.X)
+        self.label.pack(fill=tkinter.X)
 
 
-class NavBar(tk.Frame):  # pragma no cover
+class NavBar(tkinter.Frame):  # pragma no cover
     def __init__(self, master):
-        tk.Frame.__init__(self, master)
-        self.next = tk.Button(text="Next >", command=lambda: master.handle_callback("next"))
-        self.prev = tk.Button(text="< Previous", command=lambda: master.handle_callback("prev"))
+        tkinter.Frame.__init__(self, master)
+        self.next = tkinter.Button(text="Next >", command=lambda: master.handle_callback("next"))
+        self.prev = tkinter.Button(text="< Previous", command=lambda: master.handle_callback("prev"))
         self.prev.grid(column=0, row=0, in_=self, pady=5)
         self.next.grid(column=1, row=0, in_=self, padx=5, pady=5)
 
 
-class ToolBar(tk.Menu):  # pragma no cover
+class ToolBar(tkinter.Menu):  # pragma no cover
     def __init__(self, master, handler):
-        tk.Menu.__init__(self, master)
+        tkinter.Menu.__init__(self, master)
         master.config(menu=self)
 
-        fileMenu = tk.Menu(self, tearoff=False)
+        fileMenu = tkinter.Menu(self, tearoff=False)
 
         fileMenu.add_command(label="Open", command=lambda: handler.handle_callback("open"))
         fileMenu.add_command(label="Save", command=lambda: handler.handle_callback("save"))
@@ -175,9 +167,9 @@ class ToolBar(tk.Menu):  # pragma no cover
         self.add_cascade(label="File", underline=0, menu=fileMenu)
 
 
-class Main(tk.Frame):  # pragma no cover
+class Main(tkinter.Frame):  # pragma no cover
     def __init__(self, master, paper, data):
-        tk.Frame.__init__(self, master)
+        tkinter.Frame.__init__(self, master)
         master.add_callback("next", lambda: Main.get_next(self))
         self.master = master
         # Get paper information
@@ -266,23 +258,25 @@ class Main(tk.Frame):  # pragma no cover
             self.widgetfield.grid(row=1)
 
 
-class InfoField(tk.Frame):  # pragma no cover
+class InfoField(tkinter.Frame):  # pragma no cover
     def __init__(self, master):
         font = ("serif", 16)
-        tk.Frame.__init__(self, master)
-        self.__titlevar = tk.StringVar(self, "Title")
-        self.__title = tk.Label(master, textvariable=self.__titlevar, font=("Helvetica", 18), pady=10)
-        self.__questionvar = tk.StringVar(self, "Question")
-        self.__question = tk.Label(master, textvariable=self.__questionvar, anchor=tk.W, font=("serif", 16, "bold"),
-                                   pady=5)
-        self.__answervar = tk.StringVar(self, "Answer")
-        self.__answer = tk.Label(master, textvariable=self.__answervar, anchor=tk.W, font=("Times", 16), pady=5,
-                                 relief="groove")
-        self.__lengthvar = tk.StringVar(self, "Length")
-        self.__length = tk.Label(master, textvariable=self.__lengthvar, anchor=tk.W, font=font, pady=5)
-        self.q = tk.Label(self, text="Question:", anchor=tk.E, font=font, pady=5)
-        self.a = tk.Label(self, text="Answer:", anchor=tk.E, font=font, pady=10)
-        self.length_label = tk.Label(self, text="Length:", anchor=tk.E, font=font, pady=5)
+        tkinter.Frame.__init__(self, master)
+        self.__titlevar = tkinter.StringVar(self, "Title")
+        self.__title = tkinter.Label(master, textvariable=self.__titlevar, font=("Helvetica", 18), pady=10)
+        self.__questionvar = tkinter.StringVar(self, "Question")
+        self.__question = tkinter.Label(master, textvariable=self.__questionvar, anchor=tkinter.W,
+                                        font=("serif", 16, "bold"),
+                                        pady=5)
+        self.__answervar = tkinter.StringVar(self, "Answer")
+        self.__answer = tkinter.Label(master, textvariable=self.__answervar, anchor=tkinter.W, font=("Times", 16),
+                                      pady=5,
+                                      relief="groove")
+        self.__lengthvar = tkinter.StringVar(self, "Length")
+        self.__length = tkinter.Label(master, textvariable=self.__lengthvar, anchor=tkinter.W, font=font, pady=5)
+        self.q = tkinter.Label(self, text="Question:", anchor=tkinter.E, font=font, pady=5)
+        self.a = tkinter.Label(self, text="Answer:", anchor=tkinter.E, font=font, pady=10)
+        self.length_label = tkinter.Label(self, text="Length:", anchor=tkinter.E, font=font, pady=5)
         self.__title.grid(in_=self, row=0, columnspan=2)
         self.q.grid(in_=self, column=0, row=1)
         self.__question.grid(in_=self, column=1, row=1)
@@ -325,9 +319,9 @@ class InfoField(tk.Frame):  # pragma no cover
         self.__lengthvar.set(value)
 
 
-class WidgetField(tk.Frame):  # pragma no cover
+class WidgetField(tkinter.Frame):  # pragma no cover
     def __init__(self, master, criterias):
-        tk.Frame.__init__(self, master)
+        tkinter.Frame.__init__(self, master)
         self.criterias = criterias
         self.widgets = []
         for i in criterias:
