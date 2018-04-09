@@ -1,6 +1,8 @@
 import logging
 import os
 import tkinter
+import tkinter.filedialog
+
 import yaml
 
 from msquaredc import persistence
@@ -78,7 +80,7 @@ class MainFrame(object):  # pragma no cover
         return "break"
 
     def save_file(self):
-        filename = filedialog.asksaveasfilename()
+        filename = tkinter.filedialog.asksaveasfilename()
         try:
             file = open(filename, 'w')
             self.open_files["save"].append(file)

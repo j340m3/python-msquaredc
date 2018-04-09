@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
-import traceback
 import tkinter
+import tkinter.filedialog
 import tkinter.ttk
+import traceback
 
 from msquaredc.ui.interfaces import AbstractPresenter
-
 
 
 def center(toplevel):
@@ -103,8 +103,8 @@ class GUIPresenter(AbstractPresenter):
         config_file = self["econfig"].get()
         data_file = self["edata"].get()
         done = True
-        done = done and self.feedback_file_correctness("econfig",config_file)
-        done = done and self.feedback_file_correctness("edata",data_file)
+        done = done and self.feedback_file_correctness("econfig", config_file)
+        done = done and self.feedback_file_correctness("edata", data_file)
         if done:
             for i in self:
                 self[i].destroy()
@@ -133,7 +133,7 @@ class GUIPresenter(AbstractPresenter):
             child.destroy()
 
     def get_config_file(self):
-        self.pb["config_file"] = filedialog.askopenfilename()
+        self.pb["config_file"] = tkinter.filedialog.askopenfilename()
 
     def toggle_fullscreen(self, event=None):
         self.logger.debug("Toggling Fullscreen to {}.".format(not self.__is_fullscreen))
@@ -171,7 +171,8 @@ class GUIPresenter(AbstractPresenter):
         except StopIteration:
             self.show_end()
         else:
-            self["question"] = tkinter.Label(self.frame, text=self.current_question.question, wraplength=self.wraplength,
+            self["question"] = tkinter.Label(self.frame, text=self.current_question.question,
+                                             wraplength=self.wraplength,
                                              font=("Sans", 16, "bold"))
             self["question"].grid(row=0, padx=5, pady=5)
             self["answer"] = tkinter.Label(self.frame, text=self.current_question.answer, wraplength=self.wraplength,
