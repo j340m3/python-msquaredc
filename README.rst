@@ -56,9 +56,9 @@ Overview
     :target: https://www.codacy.com/app/j340m3/python-msquaredc
     :alt: Codacy Code Quality Status
 
-.. |codeclimate| image:: https://codeclimate.com/github/j340m3/python-msquaredc/badges/gpa.svg
-    :target: https://codeclimate.com/github/j340m3/python-msquaredc
-   :alt: CodeClimate Quality Status
+.. |codeclimate| image:: https://api.codeclimate.com/v1/badges/dae306812e56b914d3e1/maintainability
+   :target: https://codeclimate.com/github/j340m3/python-msquaredc/maintainability
+   :alt: Maintainability
 
 .. |version| image:: https://img.shields.io/pypi/v/msquaredc.svg
     :alt: PyPI Package latest release
