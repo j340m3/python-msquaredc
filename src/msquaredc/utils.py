@@ -99,7 +99,7 @@ class Decorator:
         self.newkwargs = kwargs
         self.decorators = {}
         if "decorators" in self.newkwargs:
-            self.decorators = self.newargs["decorators"]
+            self.decorators = self.newkwargs["decorators"]
         if args:
             if isinstance(args[0], type):
                 self.decoree = args[0]
@@ -140,8 +140,7 @@ class Decorator:
             def __init__(self, *args, **kwargs):
                 self.__instance = cls(*args, **kwargs)
 
-            "This is the overwritten class"
-
+            """This is the overwritten class"""
             def __getattribute__(self, attr_name):
                 if attr_name == "__class__":
                     return cls
