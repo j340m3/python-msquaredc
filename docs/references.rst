@@ -1,0 +1,2 @@
+.. automodule:: msquaredc
+    :members:
