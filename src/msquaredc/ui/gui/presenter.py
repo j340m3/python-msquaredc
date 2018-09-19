@@ -45,6 +45,9 @@ class GUIPresenter(AbstractPresenter):
     def __getitem__(self, item):
         return self.widgets.__getitem__(item)
 
+    def pop(self,*args,**kwargs):
+        return self.widgets.pop(*args,**kwargs)
+
     def __iter__(self):
         return self.widgets.__iter__()
 
@@ -208,6 +211,7 @@ class GUIPresenter(AbstractPresenter):
                 self["ne" + str(i)] = tk.Entry(self["helper"], font=("Sans", 20))
                 self["ne" + str(i)].grid(row=2 * i + 1, column=1, padx=5, pady=5)
 
+
             self["button"] = tk.Button(self.tk, text="Next >", command=self.__cleanup_answer_question)
             self["button"].grid(row=2, column=1, padx=5, pady=5, ipadx=15)
 
@@ -230,6 +234,7 @@ class GUIPresenter(AbstractPresenter):
         if done:
             for i in self:
                 self[i].destroy()
+            self.widgets = {}
             self.show_question()
 
     def run(self):
