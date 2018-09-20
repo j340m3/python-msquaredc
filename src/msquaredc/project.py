@@ -23,12 +23,16 @@ class ProjectBuilder(object):
             self.config = kwargs["config"]
         else:
             self.config = None
+        if "separator" in kwargs:
+            self.separator = kwargs["separator"]
+        else:
+            self.separator = None
 
     def finished(self):
         return self.data is not None and self.coder is not None and self.config is not None
 
     def build(self):
-        return Project(data=self.data, coder=self.coder, config=self.config)
+        return Project(data=self.data, coder=self.coder, config=self.config, separator=self.separator)
 
 
 class Project(object):
@@ -51,7 +55,7 @@ class Project(object):
         self.conn.commit()
         if "data" in kwargs:
             with open(os.path.join(path, kwargs["data"])) as file:
-                res = Project.handleCSV(file, ";")
+                res = Project.handleCSV(file, kwargs["separator"])
             if len(res):
                 titles = list(res[0].keys())
                 cquery = ["{} {}".format(self.__transform_column(i), "TEXT") for i in titles]
