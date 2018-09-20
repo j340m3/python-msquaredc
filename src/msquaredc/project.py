@@ -1,7 +1,7 @@
 import os
 import random
 import sqlite3
-
+from builtins import str
 import yaml
 
 
@@ -84,7 +84,8 @@ class Project(object):
             c.execute("""CREATE TABLE IF NOT EXISTS question_assoc (question text, coding text)""")
             with open(os.path.join(path, kwargs["config"])) as file:
                 questions = yaml.load(file)
-
+                if questions is None:
+                    raise Exception("Could not read the Config file!")
             for question in questions["questions"]:
                 qquery = ", ".join(
                     [self.__transform_column(i["criteria"]) + " TEXT" for i in question["coding"]] + ["coder TEXT"])
