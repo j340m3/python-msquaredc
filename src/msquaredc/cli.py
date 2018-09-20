@@ -19,6 +19,7 @@ import os
 
 import click
 
+from __future__ import unicode_literals
 from msquaredc.project import ProjectBuilder
 from msquaredc.ui.interfaces import AbstractPresenter
 
