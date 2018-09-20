@@ -1,7 +1,7 @@
 import os
 import random
 import sqlite3
-
+from builtins import str
 import yaml
 
 
@@ -23,12 +23,16 @@ class ProjectBuilder(object):
             self.config = kwargs["config"]
         else:
             self.config = None
+        if "separator" in kwargs:
+            self.separator = kwargs["separator"]
+        else:
+            self.separator = None
 
     def finished(self):
         return self.data is not None and self.coder is not None and self.config is not None
 
     def build(self):
-        return Project(data=self.data, coder=self.coder, config=self.config)
+        return Project(data=self.data, coder=self.coder, config=self.config, separator=self.separator)
 
 
 class Project(object):
@@ -51,7 +55,7 @@ class Project(object):
         self.conn.commit()
         if "data" in kwargs:
             with open(os.path.join(path, kwargs["data"])) as file:
-                res = Project.handleCSV(file, ";")
+                res = Project.handleCSV(file, kwargs["separator"])
             if len(res):
                 titles = list(res[0].keys())
                 cquery = ["{} {}".format(self.__transform_column(i), "TEXT") for i in titles]
@@ -80,7 +84,8 @@ class Project(object):
             c.execute("""CREATE TABLE IF NOT EXISTS question_assoc (question text, coding text)""")
             with open(os.path.join(path, kwargs["config"])) as file:
                 questions = yaml.load(file)
-
+                if questions is None:
+                    raise Exception("Could not read the Config file!")
             for question in questions["questions"]:
                 qquery = ", ".join(
                     [self.__transform_column(i["criteria"]) + " TEXT" for i in question["coding"]] + ["coder TEXT"])
@@ -104,8 +109,8 @@ class Project(object):
         for i in "?()-,;[].=":
             column = column.replace(i, "_")
         columns = column.split(" ")
-        columns = list(map(str.lower, columns))
-        kw = ["alter"]
+        columns = [column.lower() for column in columns]
+        kw = ["alter", "group"]
         for i in range(len(columns)):
             if columns[i] in kw:
                 columns[i] = "_".join([columns[i][:-1], columns[i][-1]])
