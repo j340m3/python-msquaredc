@@ -28,7 +28,7 @@ class ProjectBuilder(object):
         return self.data is not None and self.coder is not None and self.config is not None
 
     def build(self):
-        return Project(data=self.data, coder=self.coder, config=self.config)
+        return Project(data=self.data, coder=self.coder, config=self.config, )
 
 
 class Project(object):
