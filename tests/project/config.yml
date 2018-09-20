@@ -1,0 +1,10 @@
+questions:
+	- text: q1
+	  coding:
+		- criteria: Criteria1
+		- criteria: Criteria2
+    - text: q2
+      coding:
+        - criteria: Criteria3
+show:
+	- item_id

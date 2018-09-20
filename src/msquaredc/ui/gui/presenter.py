@@ -213,6 +213,7 @@ class GUIPresenter(AbstractPresenter):
         if done:
             for i in self:
                 self[i].destroy()
+            self.widgets = {}
             self.show_question()
 
     def run(self):
