@@ -110,7 +110,7 @@ class Project(object):
             column = column.replace(i, "_")
         columns = column.split(" ")
         columns = [column.lower() for column in columns]
-        kw = ["alter","group"]
+        kw = ["alter", "group"]
         for i in range(len(columns)):
             if columns[i] in kw:
                 columns[i] = "_".join([columns[i][:-1], columns[i][-1]])
