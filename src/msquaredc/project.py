@@ -105,7 +105,7 @@ class Project(object):
         for i in "?()-,;[].=":
             column = column.replace(i, "_")
         columns = column.split(" ")
-        columns = list(map(str.lower, columns))
+        columns = [column.lower for column in columns]
         kw = ["alter"]
         for i in range(len(columns)):
             if columns[i] in kw:
