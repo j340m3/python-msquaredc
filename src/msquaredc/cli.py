@@ -27,12 +27,12 @@ from msquaredc.ui.interfaces import AbstractPresenter
 @click.option('--config-file', default=None, help="Location of the project configuration file.")
 @click.option("--data-file", default=None, help="Location of the data file.")
 @click.option("--user-interface", default="gui", help="User interface to start. [tui | gui | web]")
-@click.option("--separator", default="\n", help="Separator used in your file.")
+@click.option("--separator", default="\t", help="Separator used in your file.")
 @click.option("--loglevel", default="warning",
               help="On which level to log. [debug | info | warning | error | critical]")
 @click.option("--logfile", default="logfile.log", help="Where to log.")
 @click.option("--coder", default=None, help="Current coder.")
-def main(config_file=None, data_file=None, user_interface="gui", separator="\n", loglevel="warning", logfile="logfile.log", coder=None):
+def main(config_file=None, data_file=None, user_interface="gui", separator="\t", loglevel="warning", logfile="logfile.log", coder=None):
     """Command line interface to msquaredc."""
     setup_logging(loglevel, logfile)
     presenter = None
