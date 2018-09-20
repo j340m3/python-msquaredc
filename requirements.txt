@@ -1,5 +1,5 @@
 PyYAML==3.12
 click==6.7
-future
+future==0.16.0
 -e .
 
