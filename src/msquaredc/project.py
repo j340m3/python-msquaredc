@@ -1,7 +1,7 @@
 import os
 import random
 import sqlite3
-
+from builtins import str
 import yaml
 
 
