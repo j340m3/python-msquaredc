@@ -1,4 +1,4 @@
-PyYAML==3.12
+PyYAML==3.13
 click==6.7
 future==0.16.0
 -e .
