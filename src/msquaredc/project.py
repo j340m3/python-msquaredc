@@ -3,6 +3,14 @@ import random
 import sqlite3
 from builtins import str
 import yaml
+from sqlalchemy import *
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relation, sessionmaker
+
+Base = declarative_base()
+
+class Project(Base):
+    __tablename__ = "project"
 
 
 class FileNotFoundError(IOError):
