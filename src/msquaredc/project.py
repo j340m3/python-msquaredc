@@ -15,12 +15,12 @@ class Question(Base):
     id = Column(Integer, primary_key=True)
     text = Column(String, nullable=False)
     criterias = relationship("Criteria", backref='question', lazy=True)
-    answers = relationship("Answer", backref='question')
+    answers = relationship("Answer", backref='question', lazy=True)
 
 class Criteria(Base):
     __tablename__ = "criteria"
     id = Column(Integer, primary_key=True)
-    answer = Column(String)
+    text = Column(String, nullable=False)
     question_id = Column(Integer, ForeignKey('question.id'), nullable=False)
     question = relationship("Question")
     codings = relationship("Coding", backref="criteria")
@@ -32,6 +32,8 @@ class Answer(Base):
     question_id = Column(Integer, ForeignKey('question.id'), nullable=False)
     question = relationship("Question")
     codings = relationship("Coding", backref="answer")
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user = relationship("User")
 
 class Coding(Base):
     __tablename__ = "coding"
@@ -42,6 +44,12 @@ class Coding(Base):
     answer = relationship("Answer")
     criteria_id = Column(Integer, ForeignKey('criteria.id'), nullable=False)
     criteria = relationship("Criteria")
+
+class User(Base):
+    __tablename__ = "user"
+    id = Column(Integer, primary_key=True)
+    facts = Column(PickleType)
+    answers = relationship("Answer", backref="user",lazy=True)
 
 class FileNotFoundError(IOError):
     pass
@@ -83,7 +91,7 @@ class Project(object):
         else:
             raise Exception("Please define the coder!")
         # if file not exists
-        self.eng = create_engine('sqlite:///:memory:')
+        self.eng = create_engine('sqlite://{}'.format(file),echo=True)
         Base.metadata.bind = self.eng
         Base.metadata.create_all()
         self.Session = sessionmaker(bind=self.eng)
@@ -92,15 +100,95 @@ class Project(object):
         self.load_config(path, kwargs["config"])
         self.current_coding_unit = None
 
-
     def load_config(self, path, configfile):
         with open(os.path.join(path, configfile)) as file:
-        questions = yaml.load(file)
+            questions = yaml.load(file)
         if questions is None:
             raise Exception("Could not read the Config file!")
+        session = self.Session()
         for question in questions["questions"]:
+            q = Project.get_question(session, question["text"])
+            for criteria in question["coding"]:
+                Project.get_criteria(session,criteria["criteria"],q)
+        session.commit()
+
+    def load_data(self,path,datafile, separator):
+        with open(os.path.join(path, datafile)) as file:
+            data = Project.handleCSV(file, separator)
+        if len(data) > 1:
+            titles = set(data[0].keys())
+            session = self.Session()
+            questions = set(session.query(Question).all())
+            user_data = titles - questions
+            for user in data:
+                # TODO: get_user muss noch alle antworten Checken. 
+                user_dict = {key:user[key] for key in user_data}
+                u = Project.get_user(user_dict,questions)
+                for question in questions:
+                    q = self.get_question(question)
+                    Project.get_answer(session,text=user[question],question=q,user=u)
+            session.commit()
+
+    @staticmethod
+    def get_user(session,facts,answers):
+        u_all = session.query(User).filter_by(facts=facts).all()
+        if len(u_all) > 1:
+            raise Exception("Found duplicate user with ids {}"
+                            .format(", ".join([c.id for c in u_all])))
+        elif len(u_all) == 1:
+            # Na bravo. Passt doch. Evtl success loggen
+            c = u_all[0]
+        else:
+            c = User(facts=facts)
+            session.add(c)
+        return c
+
+    @staticmethod
+    def get_question(session, text):
+        q_all = session.query(Question).filter_by(text=text).all()
+        if len(q_all) > 1:
+            raise Exception("Found duplicate question for \"{}\" with ids {}".format(text,
+                                                                                     ", ".join([q.id for q in q_all])))
+        elif len(q_all) == 1:
+            q = q_all[0]
+        else:
+            q = Question(text=text)
+            session.add(q)
+        return q
+
+    @staticmethod
+    def get_criteria(session, text, question):
+        c_all = session.query(Criteria).filter_by(text=text, question=question).all()
+        if len(c_all) > 1:
+            raise Exception("Found duplicate criteria for criteria \"{}\" of the question \"{}\" with ids {}"
+                            .format(text, question.text, ", ".join([c.id for c in c_all])))
+        elif len(c_all) == 1:
+            # Na bravo. Passt doch. Evtl success loggen
+            c = c_all[0]
+        else:
+            c = Criteria(question=question, text=text)
+            session.add(c)
+        return c
+
+    @staticmethod
+    def get_answer(session, text, question, user):
+        a_all = session.query(Answer).filter_by(text=text, question=question,user=user).all()
+        if len(a_all) > 1:
+            raise Exception("Found duplicate answer for answer \"{}\" of the question \"{}\" of the user {} with ids {}"
+                            .format(text, question.text, user.id, ", ".join([a.id for a in a_all])))
+        elif len(a_all) == 1:
+            # Na bravo. Passt doch. Evtl success loggen
+            a = a_all[0]
+        else:
+            a = Criteria(question=question, text=text)
+            session.add(a)
+        return a
 
     def init_db(self, path, *args, **kwargs):
+        if "config" in kwargs and kwargs["config"] is not None:
+            self.load_config(path,kwargs["config"])
+        if "data" in kwargs and kwargs["data"] is not None:
+            self.load_data(path,kwargs["data"])
         session = self.Session()
 
         # c = self.conn.cursor()
@@ -141,22 +229,22 @@ class Project(object):
                                                                                                 "?" for _ in values)),
                                       values)
                             self.conn.commit()
-        if "config" in kwargs:
-            c.execute("""CREATE TABLE IF NOT EXISTS question_assoc (question text, coding text)""")
-            with open(os.path.join(path, kwargs["config"])) as file:
-                questions = yaml.load(file)
-                if questions is None:
-                    raise Exception("Could not read the Config file!")
-            for question in questions["questions"]:
-                qquery = ", ".join(
-                    [self.__transform_column(i["criteria"]) + " TEXT" for i in question["coding"]] + ["coder TEXT"])
-                c.execute("""CREATE TABLE IF NOT EXISTS {} (id INTEGER PRIMARY KEY, {})""".format(
-                    self.__transform_column(question["text"]), qquery))
-                for i in question["coding"]:
-                    c.execute("""INSERT INTO question_assoc SELECT ?,?
-                                  WHERE NOT EXISTS(SELECT 1 FROM question_assoc WHERE question=? AND coding=?)""",
-                              (question["text"], i["criteria"], question["text"], i["criteria"]))
-                self.conn.commit()
+        # if "config" in kwargs:
+        #     c.execute("""CREATE TABLE IF NOT EXISTS question_assoc (question text, coding text)""")
+        #     with open(os.path.join(path, kwargs["config"])) as file:
+        #         questions = yaml.load(file)
+        #         if questions is None:
+        #             raise Exception("Could not read the Config file!")
+        #     for question in questions["questions"]:
+        #         qquery = ", ".join(
+        #             [self.__transform_column(i["criteria"]) + " TEXT" for i in question["coding"]] + ["coder TEXT"])
+        #         c.execute("""CREATE TABLE IF NOT EXISTS {} (id INTEGER PRIMARY KEY, {})""".format(
+        #             self.__transform_column(question["text"]), qquery))
+        #         for i in question["coding"]:
+        #             c.execute("""INSERT INTO question_assoc SELECT ?,?
+        #                           WHERE NOT EXISTS(SELECT 1 FROM question_assoc WHERE question=? AND coding=?)""",
+        #                       (question["text"], i["criteria"], question["text"], i["criteria"]))
+        #         self.conn.commit()
 
     def get_questions(self, question):
         c = self.conn.cursor()
