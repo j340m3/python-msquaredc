@@ -1,3 +1,4 @@
+import logging
 import os
 import random
 import sqlite3
@@ -5,13 +6,42 @@ from builtins import str
 import yaml
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relation, sessionmaker
+from sqlalchemy.orm import relationship, sessionmaker
 
 Base = declarative_base()
 
-class Project(Base):
-    __tablename__ = "project"
+class Question(Base):
+    __tablename__ = "question"
+    id = Column(Integer, primary_key=True)
+    text = Column(String, nullable=False)
+    criterias = relationship("Criteria", backref='question', lazy=True)
+    answers = relationship("Answer", backref='question')
 
+class Criteria(Base):
+    __tablename__ = "criteria"
+    id = Column(Integer, primary_key=True)
+    answer = Column(String)
+    question_id = Column(Integer, ForeignKey('question.id'), nullable=False)
+    question = relationship("Question")
+    codings = relationship("Coding", backref="criteria")
+
+class Answer(Base):
+    __tablename__ = "answer"
+    id = Column(Integer, primary_key=True)
+    text = Column(String)
+    question_id = Column(Integer, ForeignKey('question.id'), nullable=False)
+    question = relationship("Question")
+    codings = relationship("Coding", backref="answer")
+
+class Coding(Base):
+    __tablename__ = "coding"
+    id = Column(Integer, primary_key=True)
+    text = Column(String)
+    notes = Column(String)
+    answer_id = Column(Integer, ForeignKey('answer.id'), nullable=False)
+    answer = relationship("Answer")
+    criteria_id = Column(Integer, ForeignKey('criteria.id'), nullable=False)
+    criteria = relationship("Criteria")
 
 class FileNotFoundError(IOError):
     pass
@@ -48,22 +78,45 @@ class Project(object):
         # Project file doesn't already exist
         self.path = path
         self.file = file
-        self.conn = sqlite3.connect(os.path.join(path, file))
-        self.init_db(path, *args, **kwargs)
-        self.current_coding_unit = None
         if coder is not None:
             self.coder = coder
         else:
             raise Exception("Please define the coder!")
+        # if file not exists
+        self.eng = create_engine('sqlite:///:memory:')
+        Base.metadata.bind = self.eng
+        Base.metadata.create_all()
+        self.Session = sessionmaker(bind=self.eng)
+        # self.conn = sqlite3.connect(os.path.join(path, file))
+        self.init_db(path, *args, **kwargs)
+        self.load_config(path, kwargs["config"])
+        self.current_coding_unit = None
+
+
+    def load_config(self, path, configfile):
+        with open(os.path.join(path, configfile)) as file:
+        questions = yaml.load(file)
+        if questions is None:
+            raise Exception("Could not read the Config file!")
+        for question in questions["questions"]:
 
     def init_db(self, path, *args, **kwargs):
-        c = self.conn.cursor()
-        c.execute("""CREATE TABLE IF NOT EXISTS vars (key text, value text)""")
-        c.execute("""CREATE TABLE IF NOT EXISTS translation (clear text, translated text, UNIQUE(clear, translated))""")
-        self.conn.commit()
+        session = self.Session()
+
+        # c = self.conn.cursor()
+        # c.execute("""CREATE TABLE IF NOT EXISTS vars (key text, value text)""")
+        # c.execute("""CREATE TABLE IF NOT EXISTS translation (clear text, translated text, UNIQUE(clear, translated))""")
+        # self.conn.commit()
+
+
+
         if "data" in kwargs:
+            if kwargs["data"] is None:
+                raise Exception("Please provide a data file.")
+
             with open(os.path.join(path, kwargs["data"])) as file:
                 res = Project.handleCSV(file, kwargs["separator"])
+
             if len(res):
                 titles = list(res[0].keys())
                 cquery = ["{} {}".format(self.__transform_column(i), "TEXT") for i in titles]
@@ -152,6 +205,9 @@ class Project(object):
         for i, j in enumerate(file):
             if i == 0:
                 titles = j.strip("\n").split(separator)
+                if len(titles) == 1:
+                    logging.log(logging.CRITICAL, "The data file contains only one column with this separator. "
+                                                  "Check your separator.")
             else:
                 res.append(dict(zip(titles, j.strip("\n").split(separator))))
         return res
