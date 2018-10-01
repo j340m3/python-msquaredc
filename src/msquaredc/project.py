@@ -229,9 +229,9 @@ class Project(object):
             for answer in session.query(Answer).filter_by(question=question).order_by(func.random()):
                 amount_of_codings_relevant = session.query(Coding).filter_by(answer=answer, coder=self.coder).count()
                 if amount_of_codings_relevant > len(criterias):
-                    raise Exception("Too many codings found, more than one for each coding necessary.\n {}"
-                        .format(
-                        "\n".join(session.query(Coding).filter_by(answer=answer, coder=self.coder))))
+                    raise Exception(
+                        "Too many codings found, more than one for each coding necessary.\n {}"
+                            .format("\n".join(session.query(Coding).filter_by(answer=answer, coder=self.coder))))
                 elif amount_of_codings_relevant < len(criterias):
                     coding_done = []
                     for coding in session.query(Coding).filter_by(answer=answer, coder=self.coder):
