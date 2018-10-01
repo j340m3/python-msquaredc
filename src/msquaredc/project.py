@@ -14,26 +14,26 @@ class Question(Base):
     __tablename__ = "question"
     id = Column(Integer, primary_key=True)
     text = Column(String, nullable=False)
-    criterias = relationship("Criteria", backref='question', lazy=True)
-    answers = relationship("Answer", backref='question', lazy=True)
+    criterias = relationship("Criteria", back_populates='question', lazy=True)
+    answers = relationship("Answer", back_populates='question', lazy=True)
 
 class Criteria(Base):
     __tablename__ = "criteria"
     id = Column(Integer, primary_key=True)
     text = Column(String, nullable=False)
     question_id = Column(Integer, ForeignKey('question.id'), nullable=False)
-    question = relationship("Question")
-    codings = relationship("Coding", backref="criteria")
+    question = relationship("Question",back_populates="criterias")
+    codings = relationship("Coding", back_populates="criteria")
 
 class Answer(Base):
     __tablename__ = "answer"
     id = Column(Integer, primary_key=True)
     text = Column(String)
     question_id = Column(Integer, ForeignKey('question.id'), nullable=False)
-    question = relationship("Question")
-    codings = relationship("Coding", backref="answer")
+    question = relationship("Question",back_populates="answers")
+    codings = relationship("Coding", back_populates="answer")
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    user = relationship("User")
+    user = relationship("User",back_populates="answers")
 
 class Coding(Base):
     __tablename__ = "coding"
@@ -41,15 +41,16 @@ class Coding(Base):
     text = Column(String)
     notes = Column(String)
     answer_id = Column(Integer, ForeignKey('answer.id'), nullable=False)
-    answer = relationship("Answer")
+    answer = relationship("Answer",back_populates="codings")
     criteria_id = Column(Integer, ForeignKey('criteria.id'), nullable=False)
-    criteria = relationship("Criteria")
+    criteria = relationship("Criteria",back_populates="codings")
+    coder = Column(String)
 
 class User(Base):
     __tablename__ = "user"
     id = Column(Integer, primary_key=True)
     facts = Column(PickleType)
-    answers = relationship("Answer", backref="user",lazy=True)
+    answers = relationship("Answer", back_populates="user",lazy=True)
 
 class FileNotFoundError(IOError):
     pass
@@ -91,7 +92,7 @@ class Project(object):
         else:
             raise Exception("Please define the coder!")
         # if file not exists
-        self.eng = create_engine('sqlite://{}'.format(file),echo=True)
+        self.eng = create_engine('sqlite:///{}'.format(file),echo=True)
         Base.metadata.bind = self.eng
         Base.metadata.create_all()
         self.Session = sessionmaker(bind=self.eng)
@@ -109,7 +110,7 @@ class Project(object):
         for question in questions["questions"]:
             q = Project.get_question(session, question["text"])
             for criteria in question["coding"]:
-                Project.get_criteria(session,criteria["criteria"],q)
+                Project.get_criteria(session, criteria["criteria"], q)
         session.commit()
 
     def load_data(self,path,datafile, separator):
@@ -118,19 +119,22 @@ class Project(object):
         if len(data) > 1:
             titles = set(data[0].keys())
             session = self.Session()
-            questions = set(session.query(Question).all())
+            questions = set([i.text for i in session.query(Question)])
             user_data = titles - questions
             for user in data:
-                # TODO: get_user muss noch alle antworten Checken. 
+                # TODO: get_user muss noch alle antworten Checken.
                 user_dict = {key:user[key] for key in user_data}
-                u = Project.get_user(user_dict,questions)
+                u = Project.get_user(session,user_dict)
                 for question in questions:
-                    q = self.get_question(question)
+                    q = Project.get_question(session,question)
                     Project.get_answer(session,text=user[question],question=q,user=u)
-            session.commit()
+                session.commit()
+        else:
+            raise Exception("Check your separator!")
 
     @staticmethod
-    def get_user(session,facts,answers):
+    def get_user(session,facts,answers=None):
+        # TODO: write test to check if the dictionary check works correctly here
         u_all = session.query(User).filter_by(facts=facts).all()
         if len(u_all) > 1:
             raise Exception("Found duplicate user with ids {}"
@@ -180,7 +184,7 @@ class Project(object):
             # Na bravo. Passt doch. Evtl success loggen
             a = a_all[0]
         else:
-            a = Criteria(question=question, text=text)
+            a = Answer(question=question, text=text)
             session.add(a)
         return a
 
@@ -188,8 +192,7 @@ class Project(object):
         if "config" in kwargs and kwargs["config"] is not None:
             self.load_config(path,kwargs["config"])
         if "data" in kwargs and kwargs["data"] is not None:
-            self.load_data(path,kwargs["data"])
-        session = self.Session()
+            self.load_data(path,kwargs["data"],kwargs["separator"])
 
         # c = self.conn.cursor()
         # c.execute("""CREATE TABLE IF NOT EXISTS vars (key text, value text)""")
@@ -198,37 +201,37 @@ class Project(object):
 
 
 
-        if "data" in kwargs:
-            if kwargs["data"] is None:
-                raise Exception("Please provide a data file.")
-
-            with open(os.path.join(path, kwargs["data"])) as file:
-                res = Project.handleCSV(file, kwargs["separator"])
-
-            if len(res):
-                titles = list(res[0].keys())
-                cquery = ["{} {}".format(self.__transform_column(i), "TEXT") for i in titles]
-                cquery = ", ".join(cquery)
-                c.execute("""CREATE TABLE IF NOT EXISTS individuals (id INTEGER PRIMARY KEY,{})""".format(cquery))
-                self.conn.commit()
-                for row in res:
-                    columns = []
-                    values = []
-                    for column in row:
-                        if len(row[column].strip()) != 0:
-                            columns.append(self.__transform_column(column))
-                            values.append((row[column]))
-                    aquery = " AND ".join(i + "=?" for i in columns)
-
-                    if len(values):
-                        c.execute("""SELECT id FROM individuals WHERE {}""".format(aquery), values)
-                        identifier = c.fetchone()
-                        if not identifier:
-                            c.execute("""INSERT INTO individuals ({}) VALUES ({})""".format(", ".join(columns),
-                                                                                            " ,".join(
-                                                                                                "?" for _ in values)),
-                                      values)
-                            self.conn.commit()
+        # if "data" in kwargs:
+        #     if kwargs["data"] is None:
+        #         raise Exception("Please provide a data file.")
+        #
+        #     with open(os.path.join(path, kwargs["data"])) as file:
+        #         res = Project.handleCSV(file, kwargs["separator"])
+        #
+        #     if len(res):
+        #         titles = list(res[0].keys())
+        #         cquery = ["{} {}".format(self.__transform_column(i), "TEXT") for i in titles]
+        #         cquery = ", ".join(cquery)
+        #         c.execute("""CREATE TABLE IF NOT EXISTS individuals (id INTEGER PRIMARY KEY,{})""".format(cquery))
+        #         self.conn.commit()
+        #         for row in res:
+        #             columns = []
+        #             values = []
+        #             for column in row:
+        #                 if len(row[column].strip()) != 0:
+        #                     columns.append(self.__transform_column(column))
+        #                     values.append((row[column]))
+        #             aquery = " AND ".join(i + "=?" for i in columns)
+        #
+        #             if len(values):
+        #                 c.execute("""SELECT id FROM individuals WHERE {}""".format(aquery), values)
+        #                 identifier = c.fetchone()
+        #                 if not identifier:
+        #                     c.execute("""INSERT INTO individuals ({}) VALUES ({})""".format(", ".join(columns),
+        #                                                                                     " ,".join(
+        #                                                                                         "?" for _ in values)),
+        #                               values)
+        #                     self.conn.commit()
         # if "config" in kwargs:
         #     c.execute("""CREATE TABLE IF NOT EXISTS question_assoc (question text, coding text)""")
         #     with open(os.path.join(path, kwargs["config"])) as file:
@@ -337,30 +340,48 @@ class Project(object):
         if self.current_coding_unit is not None:
             if not self.current_coding_unit.isFinished():
                 return self.current_coding_unit
-        amount_of_individuals = self.get_number_of_entries("individuals")
-        for table in self.custom_tables:
-            c = self.conn.cursor()
-            c.execute("""SELECT * FROM {}""".format(table))
+        session = self.Session()
+        for question in session.query(Question):
+            criterias = session.query(Criteria).filter_by(question=question)
+            # TODO: Adapt for other databases
+            for answer in session.query(Answer).filter_by(question=question).order_by(func.random()):
+                amount_of_codings_relevant = session.query(Coding).filter_by(answer=answer, coder=self.coder).count()
+                if amount_of_codings_relevant > len(criterias):
+                    raise Exception("Too many codings found, more than one for each coding necessary.\n {}"
+                                    .format("\n".join(session.query(Coding).filter_by(answer=answer, coder=self.coder))))
+                elif amount_of_codings_relevant < len(criterias):
+                    coding_done = []
+                    for coding in session.query(Coding).filter_by(answer=answer, coder=self.coder):
+                        if coding.text:
+                            coding_done.append(coding.criteria)
+                        self.current_coding_unit = CodingUnit(self, question, answer, criterias, coding_done, session)
+                        return self.current_coding_unit
 
-            ids_in_table = c.fetchall()
-            ids_in_table[:] = [i for i in ids_in_table if None not in i]
-            if amount_of_individuals > len(ids_in_table):
-                entries = set(range(amount_of_individuals)) - set([i[0] for i in ids_in_table])
-                entry = random.choice(list(entries))
-                c.execute("""SELECT {} FROM individuals""".format(table))
-                coding_answer = c.fetchall()[entry][0]
-                coding_question = self.__reverse_transform_column(table)
-                questions = self.get_questions(coding_question)
-                questions[:] = [i for i in questions if not self.__question_already_answered(coding_question, i, entry)]
-                if len(questions) == 0:
-                    c.execute("""SELECT * FROM question_assoc""")
-                    res = c.fetchall()
-                    for i in res:
-                        print(i, len(i[0]), len(coding_question), repr(coding_question))
-                    raise Exception("This should not happen")
-                self.current_coding_unit = CodingUnit(self, coding_question, coding_answer, questions, entry)
-                return self.current_coding_unit
         raise StopIteration
+
+        # for table in self.custom_tables:
+        #     c = self.conn.cursor()
+        #     c.execute("""SELECT * FROM {}""".format(table))
+        #
+        #     ids_in_table = c.fetchall()
+        #     ids_in_table[:] = [i for i in ids_in_table if None not in i]
+        #     if amount_of_individuals > len(ids_in_table):
+        #         entries = set(range(amount_of_individuals)) - set([i[0] for i in ids_in_table])
+        #         entry = random.choice(list(entries))
+        #         c.execute("""SELECT {} FROM individuals""".format(table))
+        #         coding_answer = c.fetchall()[entry][0]
+        #         coding_question = self.__reverse_transform_column(table)
+        #         questions = self.get_questions(coding_question)
+        #         questions[:] = [i for i in questions if not self.__question_already_answered(coding_question, i, entry)]
+        #         if len(questions) == 0:
+        #             c.execute("""SELECT * FROM question_assoc""")
+        #             res = c.fetchall()
+        #             for i in res:
+        #                 print(i, len(i[0]), len(coding_question), repr(coding_question))
+        #             raise Exception("This should not happen")
+        #         self.current_coding_unit = CodingUnit(self, coding_question, coding_answer, questions, entry)
+        #         return self.current_coding_unit
+
 
     def __question_already_answered(self, coding_question, question, id_):
         c = self.conn.cursor()
@@ -432,25 +453,26 @@ class Project(object):
 
 
 class CodingUnit(object):
-    def __init__(self, project, question, answer, coding_questions, id_):
+    def __init__(self, project, question, answer, criterias, coding_done, session):
         self.question = question
         self.answer = answer
-        self.coding_questions = coding_questions
-        self.coding_answers = dict()
-        self.id = id_
+        self.session = session
+        self.criterias = criterias
+        self.criteria_str2obj = {i.text:i for i in criterias}
+        self.coding_done = coding_done
+        self.coding_answers = {i.text:i for i in coding_done}
         self.project = project
-        self["coder"] = project.coder
 
     def isFinished(self):
         res = True
-        res &= all(i in self.coding_answers.keys() for i in self.coding_questions)
+        res &= all(i.text in self.coding_answers.keys() for i in self.criterias)
         res &= all(self.coding_answers[i] is not None for i in self.coding_answers)
         return res
 
     def __setitem__(self, key, value):
-        self.coding_answers[key] = value
-        self.project.store_answer(self.question, key, value, self.id)
+        self.coding_answers[key] = Coding(text=value,answer=self.answer, criteria=self.criteria_str2obj[key])
+        self.session.add(self.coding_answers[key])
 
     def __repr__(self):
-        return "\n".join(["Coding unit: {} -> {}".format(self.question, self.answer)] + [
-            "-{}\n\t-> {}".format(i, self.coding_answers.get(i, None)) for i in self.coding_questions])
+        return "\n".join(["Coding unit: {} -> {}".format(self.question.text, self.answer.text)] + [
+            "-{}\n\t-> {}".format(i, self.coding_answers.get(i, None)) for i in self.criteria_str2obj.keys()])
