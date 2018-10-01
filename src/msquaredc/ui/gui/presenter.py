@@ -169,6 +169,7 @@ class GUIPresenter(AbstractPresenter):
         try:
             self.current_question = self.project.__next__()
         except StopIteration:
+            self.logger.debug("Reached end of the Coding. Showing the end screen.")
             self.show_end()
         else:
             self["question"] = tkinter.Label(self.frame, text=self.current_question.question.text,
