@@ -2,11 +2,12 @@ import logging
 import os
 
 import yaml
-from sqlalchemy import *
+from sqlalchemy import Column, create_engine, ForeignKey, func, Integer, PickleType, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
 Base = declarative_base()
+
 
 class Question(Base):
     __tablename__ = "question"
@@ -15,23 +16,26 @@ class Question(Base):
     criterias = relationship("Criteria", back_populates='question', lazy=True)
     answers = relationship("Answer", back_populates='question', lazy=True)
 
+
 class Criteria(Base):
     __tablename__ = "criteria"
     id = Column(Integer, primary_key=True)
     text = Column(String, nullable=False)
     question_id = Column(Integer, ForeignKey('question.id'), nullable=False)
-    question = relationship("Question",back_populates="criterias")
+    question = relationship("Question", back_populates="criterias")
     codings = relationship("Coding", back_populates="criteria")
+
 
 class Answer(Base):
     __tablename__ = "answer"
     id = Column(Integer, primary_key=True)
     text = Column(String)
     question_id = Column(Integer, ForeignKey('question.id'), nullable=False)
-    question = relationship("Question",back_populates="answers")
+    question = relationship("Question", back_populates="answers")
     codings = relationship("Coding", back_populates="answer")
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    user = relationship("User",back_populates="answers")
+    user = relationship("User", back_populates="answers")
+
 
 class Coding(Base):
     __tablename__ = "coding"
@@ -39,16 +43,18 @@ class Coding(Base):
     text = Column(String)
     notes = Column(String)
     answer_id = Column(Integer, ForeignKey('answer.id'), nullable=False)
-    answer = relationship("Answer",back_populates="codings")
+    answer = relationship("Answer", back_populates="codings")
     criteria_id = Column(Integer, ForeignKey('criteria.id'), nullable=False)
-    criteria = relationship("Criteria",back_populates="codings")
+    criteria = relationship("Criteria", back_populates="codings")
     coder = Column(String)
+
 
 class User(Base):
     __tablename__ = "user"
     id = Column(Integer, primary_key=True)
     facts = Column(PickleType)
-    answers = relationship("Answer", back_populates="user",lazy=True)
+    answers = relationship("Answer", back_populates="user", lazy=True)
+
 
 class FileNotFoundError(IOError):
     pass
@@ -91,7 +97,7 @@ class Project(object):
             raise Exception("Please define the coder!")
         # if file not exists
         self.separator = kwargs["separator"]
-        self.eng = create_engine('sqlite:///{}'.format(file),echo=True)
+        self.eng = create_engine('sqlite:///{}'.format(file), echo=True)
         Base.metadata.bind = self.eng
         Base.metadata.create_all()
         self.Session = sessionmaker(bind=self.eng)
@@ -113,7 +119,7 @@ class Project(object):
                     Project.get_criteria(session, criteria["criteria"], q)
             session.commit()
 
-    def load_data(self,path,datafile, separator):
+    def load_data(self, path, datafile, separator):
         with open(os.path.join(path, datafile)) as file:
             data = Project.handleCSV(file, separator)
         if len(data) > 1:
@@ -124,17 +130,17 @@ class Project(object):
                 user_data = titles - questions
                 for user in data:
                     # TODO: get_user muss noch alle antworten Checken.
-                    user_dict = {key:user[key] for key in user_data}
-                    u = Project.get_user(session,user_dict)
+                    user_dict = {key: user[key] for key in user_data}
+                    u = Project.get_user(session, user_dict)
                     for question in questions:
-                        q = Project.get_question(session,question)
-                        Project.get_answer(session,text=user[question],question=q,user=u)
+                        q = Project.get_question(session, question)
+                        Project.get_answer(session, text=user[question], question=q, user=u)
                 session.commit()
         else:
             raise Exception("Check your separator!")
 
     @staticmethod
-    def get_user(session,facts,answers=None):
+    def get_user(session, facts, answers=None):
         # TODO: write test to check if the dictionary check works correctly here
         u_all = session.query(User).filter_by(facts=facts).all()
         if len(u_all) > 1:
@@ -177,7 +183,7 @@ class Project(object):
 
     @staticmethod
     def get_answer(session, text, question, user):
-        a_all = session.query(Answer).filter_by(text=text, question=question,user=user).all()
+        a_all = session.query(Answer).filter_by(text=text, question=question, user=user).all()
         if len(a_all) > 1:
             raise Exception("Found duplicate answer for answer \"{}\" of the question \"{}\" of the user {} with ids {}"
                             .format(text, question.text, user.id, ", ".join([a.id for a in a_all])))
@@ -191,9 +197,9 @@ class Project(object):
 
     def init_db(self, path, *args, **kwargs):
         if "config" in kwargs and kwargs["config"] is not None:
-            self.load_config(path,kwargs["config"])
+            self.load_config(path, kwargs["config"])
         if "data" in kwargs and kwargs["data"] is not None:
-            self.load_data(path,kwargs["data"],kwargs["separator"])
+            self.load_data(path, kwargs["data"], kwargs["separator"])
 
     @staticmethod
     def handleCSV(file, separator):
@@ -224,7 +230,8 @@ class Project(object):
                 amount_of_codings_relevant = session.query(Coding).filter_by(answer=answer, coder=self.coder).count()
                 if amount_of_codings_relevant > len(criterias):
                     raise Exception("Too many codings found, more than one for each coding necessary.\n {}"
-                                    .format("\n".join(session.query(Coding).filter_by(answer=answer, coder=self.coder))))
+                        .format(
+                        "\n".join(session.query(Coding).filter_by(answer=answer, coder=self.coder))))
                 elif amount_of_codings_relevant < len(criterias):
                     coding_done = []
                     for coding in session.query(Coding).filter_by(answer=answer, coder=self.coder):
@@ -235,21 +242,25 @@ class Project(object):
 
         raise StopIteration
 
-    def export(self,filename="out.csv"):
+    def export(self, filename="out.csv"):
         with open(os.path.join(self.path, filename), "w") as file:
             session = self.Session()
             # TODO: Make user safe again
             random_user = session.query(User).first()
-            file.write(self.separator.join(list(random_user.facts.keys())+["Question to Participant","Participant answer",
-                                                           "Coding Criteria","Coding Value","Coder"])+"\n")
+            file.write(
+                self.separator.join(list(random_user.facts.keys()) + ["Question to Participant", "Participant answer",
+                                                                      "Coding Criteria", "Coding Value",
+                                                                      "Coder"]) + "\n")
 
             for coding in session.query(Coding).filter_by(coder=self.coder):
                 answer = coding.answer
                 user = answer.user
                 criteria = coding.criteria
                 question = criteria.question
-                file.write(self.separator.join([user.facts[key] for key in user.facts]+[question.text,answer.text,
-                                     criteria.text,coding.text,self.coder])+"\n")
+                file.write(self.separator.join([user.facts[key] for key in user.facts] + [question.text, answer.text,
+                                                                                          criteria.text, coding.text,
+                                                                                          self.coder]) + "\n")
+
 
 class CodingUnit(object):
     def __init__(self, project, question, answer, criterias, coding_done, session):
@@ -257,9 +268,9 @@ class CodingUnit(object):
         self.answer = answer
         self.session = session
         self.criterias = criterias
-        self.criteria_str2obj = {i.text:i for i in criterias}
+        self.criteria_str2obj = {i.text: i for i in criterias}
         self.coding_done = coding_done
-        self.coding_answers = {i.text:i for i in coding_done}
+        self.coding_answers = {i.text: i for i in coding_done}
         self.project = project
 
     def isFinished(self):
@@ -269,7 +280,8 @@ class CodingUnit(object):
         return res
 
     def __setitem__(self, criteria, value):
-        self.coding_answers[criteria.text] = Coding(text=value,answer=self.answer, criteria=criteria,coder=self.project.coder)
+        self.coding_answers[criteria.text] = Coding(text=value, answer=self.answer, criteria=criteria,
+                                                    coder=self.project.coder)
         self.session.add(self.coding_answers[criteria.text])
         self.session.commit()
 
