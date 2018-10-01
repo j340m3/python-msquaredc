@@ -92,6 +92,7 @@ class Project(object):
         else:
             raise Exception("Please define the coder!")
         # if file not exists
+        self.separator = kwargs["separator"]
         self.eng = create_engine('sqlite:///{}'.format(file),echo=True)
         Base.metadata.bind = self.eng
         Base.metadata.create_all()
@@ -402,7 +403,7 @@ class Project(object):
                   (id_, answer, id_))
         self.conn.commit()
 
-    def export(self, filename="out.txt"):
+    def export2(self, filename="out.txt"):
         with open(os.path.join(self.path, filename), "w") as file:
             file.write("\t".join([self.__reverse_transform_column(i) for i in self.get_columns("individuals") if
                                   i not in self.custom_tables + ["id"]]
@@ -452,6 +453,22 @@ class Project(object):
         #with open(os.path.join(self.path,filename)):
         #    pass
         """
+
+    def export(self,filename="out.csv"):
+        with open(os.path.join(self.path, filename), "w") as file:
+            session = self.Session()
+            # TODO: Make user safe again
+            random_user = session.query(User).first()
+            file.write(self.separator.join(list(random_user.facts.keys())+["Question to Participant","Participant answer",
+                                                           "Coding Criteria","Coding Value","Coder"])+"\n")
+
+            for coding in session.query(Coding).filter_by(coder=self.coder):
+                answer = coding.answer
+                user = answer.user
+                criteria = coding.criteria
+                question = criteria.question
+                file.write(self.separator.join([user.facts[key] for key in user.facts]+[question.text,answer.text,
+                                     criteria.text,coding.text,self.coder])+"\n")
 
 
 class CodingUnit(object):
