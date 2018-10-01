@@ -171,17 +171,17 @@ class GUIPresenter(AbstractPresenter):
         except StopIteration:
             self.show_end()
         else:
-            self["question"] = tkinter.Label(self.frame, text=self.current_question.question,
+            self["question"] = tkinter.Label(self.frame, text=self.current_question.question.text,
                                              wraplength=self.wraplength,
                                              font=("Sans", 16, "bold"))
             self["question"].grid(row=0, padx=5, pady=5)
-            self["answer"] = tkinter.Label(self.frame, text=self.current_question.answer, wraplength=self.wraplength,
+            self["answer"] = tkinter.Label(self.frame, text=self.current_question.answer.text, wraplength=self.wraplength,
                                            font=("Sans", 16, "bold"))
             self["answer"].grid(row=1, padx=5, pady=5)
             self["helper"] = tkinter.Frame(self.frame)
             self["helper"].grid(row=2)
-            for i, j in enumerate(self.current_question.coding_questions):
-                self["l" + str(i)] = tkinter.Label(self["helper"], text=j, font=("Sans", 20))
+            for i, criteria in enumerate(self.current_question.criterias):
+                self["l" + str(i)] = tkinter.Label(self["helper"], text=criteria.text, font=("Sans", 20))
                 self["l" + str(i)].grid(row=2 * (i), column=0, padx=5, pady=5)
                 self["nl" + str(i)] = tkinter.Label(self["helper"], text="Notes", font=("Sans", 20))
                 self["nl" + str(i)].grid(row=2 * (i), column=1, padx=5, pady=5)
@@ -208,7 +208,7 @@ class GUIPresenter(AbstractPresenter):
                 else:
                     self[element].config(bg="#e0ffe0")
                     index = int(element[1:])
-                    self.current_question[self.current_question.coding_questions[index]] = content
+                    self.current_question[self.current_question.criterias[index]] = content
 
         if done:
             for i in self:

@@ -107,11 +107,12 @@ class Project(object):
         if questions is None:
             raise Exception("Could not read the Config file!")
         session = self.Session()
-        for question in questions["questions"]:
-            q = Project.get_question(session, question["text"])
-            for criteria in question["coding"]:
-                Project.get_criteria(session, criteria["criteria"], q)
-        session.commit()
+        with session.no_autoflush:
+            for question in questions["questions"]:
+                q = Project.get_question(session, question["text"])
+                for criteria in question["coding"]:
+                    Project.get_criteria(session, criteria["criteria"], q)
+            session.commit()
 
     def load_data(self,path,datafile, separator):
         with open(os.path.join(path, datafile)) as file:
@@ -119,15 +120,16 @@ class Project(object):
         if len(data) > 1:
             titles = set(data[0].keys())
             session = self.Session()
-            questions = set([i.text for i in session.query(Question)])
-            user_data = titles - questions
-            for user in data:
-                # TODO: get_user muss noch alle antworten Checken.
-                user_dict = {key:user[key] for key in user_data}
-                u = Project.get_user(session,user_dict)
-                for question in questions:
-                    q = Project.get_question(session,question)
-                    Project.get_answer(session,text=user[question],question=q,user=u)
+            with session.no_autoflush:
+                questions = set([i.text for i in session.query(Question)])
+                user_data = titles - questions
+                for user in data:
+                    # TODO: get_user muss noch alle antworten Checken.
+                    user_dict = {key:user[key] for key in user_data}
+                    u = Project.get_user(session,user_dict)
+                    for question in questions:
+                        q = Project.get_question(session,question)
+                        Project.get_answer(session,text=user[question],question=q,user=u)
                 session.commit()
         else:
             raise Exception("Check your separator!")
@@ -184,7 +186,7 @@ class Project(object):
             # Na bravo. Passt doch. Evtl success loggen
             a = a_all[0]
         else:
-            a = Answer(question=question, text=text)
+            a = Answer(question=question, text=text, user=user)
             session.add(a)
         return a
 
@@ -342,7 +344,7 @@ class Project(object):
                 return self.current_coding_unit
         session = self.Session()
         for question in session.query(Question):
-            criterias = session.query(Criteria).filter_by(question=question)
+            criterias = list(session.query(Criteria).filter_by(question=question))
             # TODO: Adapt for other databases
             for answer in session.query(Answer).filter_by(question=question).order_by(func.random()):
                 amount_of_codings_relevant = session.query(Coding).filter_by(answer=answer, coder=self.coder).count()
@@ -354,8 +356,8 @@ class Project(object):
                     for coding in session.query(Coding).filter_by(answer=answer, coder=self.coder):
                         if coding.text:
                             coding_done.append(coding.criteria)
-                        self.current_coding_unit = CodingUnit(self, question, answer, criterias, coding_done, session)
-                        return self.current_coding_unit
+                    self.current_coding_unit = CodingUnit(self, question, answer, criterias, coding_done, session)
+                    return self.current_coding_unit
 
         raise StopIteration
 
@@ -469,9 +471,10 @@ class CodingUnit(object):
         res &= all(self.coding_answers[i] is not None for i in self.coding_answers)
         return res
 
-    def __setitem__(self, key, value):
-        self.coding_answers[key] = Coding(text=value,answer=self.answer, criteria=self.criteria_str2obj[key])
-        self.session.add(self.coding_answers[key])
+    def __setitem__(self, criteria, value):
+        self.coding_answers[criteria.text] = Coding(text=value,answer=self.answer, criteria=criteria,coder=self.project.coder)
+        self.session.add(self.coding_answers[criteria.text])
+        self.session.commit()
 
     def __repr__(self):
         return "\n".join(["Coding unit: {} -> {}".format(self.question.text, self.answer.text)] + [
