@@ -231,7 +231,7 @@ class Project(object):
                 if amount_of_codings_relevant > len(criterias):
                     raise Exception(
                         "Too many codings found, more than one for each coding necessary.\n {}"
-                            .format("\n".join(session.query(Coding).filter_by(answer=answer, coder=self.coder))))
+                        .format("\n".join(session.query(Coding).filter_by(answer=answer, coder=self.coder))))
                 elif amount_of_codings_relevant < len(criterias):
                     coding_done = []
                     for coding in session.query(Coding).filter_by(answer=answer, coder=self.coder):
