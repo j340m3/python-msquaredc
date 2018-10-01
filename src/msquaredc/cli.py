@@ -37,6 +37,8 @@ def main(config_file=None, data_file=None, user_interface="gui", separator="\t",
     """Command line interface to msquaredc."""
     setup_logging(loglevel, logfile)
     presenter = None
+    check_file(config_file)
+    check_file(data_file)
 
     pb = ProjectBuilder(data=data_file, separator=separator, config=config_file, coder=coder)
 
