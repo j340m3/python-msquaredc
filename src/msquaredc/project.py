@@ -146,8 +146,8 @@ class Project(object):
         else:
             raise Exception("Check your separator!")
 
-    def match(self, list, candidate):
-        if candidate in list:
+    def match(self, list_, candidate):
+        if candidate in list_:
             return candidate
         else:
             self.logger.info("Didn't match at first try. Attempting smart match.")
@@ -156,7 +156,7 @@ class Project(object):
             second = 0
             best_match = None
             sum_score = 0
-            for entry in list:
+            for entry in list_:
                 score = 1.0 * len(lcs(entry, candidate)) / len(candidate) * min(len(entry), len(candidate)) / max(
                     len(entry), len(candidate))
                 sum_score += score
@@ -168,16 +168,16 @@ class Project(object):
                         second = score
             if best > 3 * second:
                 self.logger.info(
-                    "Could match {} onto {} from {} with probability {}.".format(candidate, best_match, list,
+                    "Could match {} onto {} from {} with probability {}.".format(candidate, best_match, list_,
                                                                                  second / best))
                 return best_match
             else:
                 raise Exception(
                     "Couldn't match {} onto {}. Best guess: {}, with probability {}. Error probability at {}.".format(
-                        candidate, list, best_match, best, second / best))
+                        candidate, list_, best_match, best, second / best))
 
     @staticmethod
-    def get_user(session, facts, answers=None):
+    def get_user(session, facts):
         # TODO: write test to check if the dictionary check works correctly here, but apparently it does
         u_all = session.query(User).filter_by(facts=facts).all()
         if len(u_all) > 1:
