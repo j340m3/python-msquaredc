@@ -164,10 +164,17 @@ class GUIPresenter(AbstractPresenter):
         self["export"] = tkinter.Button(self.frame, text="Export!", command=self.project.export)
         self["export"].grid(row=1, padx=5, pady=5, ipadx=10, ipady=10)
 
-    def show_question(self):
+    def show_question(self, command="resume"):
         self.logger.debug("Showing question")
         try:
-            self.current_question = self.project.__next__()
+            if command == "next_new":
+                self.current_question = self.project.next_new()
+            elif command == "next":
+                self.current_question = self.project.next()
+            elif command == "previous":
+                self.current_question = self.project.previous()
+            elif command == "resume":
+                self.current_question = self.project.resume()
         except StopIteration:
             self.logger.debug("Reached end of the Coding. Showing the end screen.")
             self.show_end()
@@ -176,46 +183,61 @@ class GUIPresenter(AbstractPresenter):
                                              wraplength=self.wraplength,
                                              font=("Sans", 16, "bold"))
             self["question"].grid(row=0, padx=5, pady=5)
-            self["answer"] = tkinter.Label(self.frame, text=self.current_question.answer.text, wraplength=self.wraplength,
+            self["answer"] = tkinter.Label(self.frame, text=self.current_question.answer.text,
+                                           wraplength=self.wraplength,
                                            font=("Sans", 16, "bold"))
             self["answer"].grid(row=1, padx=5, pady=5)
             self["helper"] = tkinter.Frame(self.frame)
             self["helper"].grid(row=2)
             for i, criteria in enumerate(self.current_question.criterias):
                 self["l" + str(i)] = tkinter.Label(self["helper"], text=criteria.text, font=("Sans", 20))
-                self["l" + str(i)].grid(row=2 * (i), column=0, padx=5, pady=5)
+                self["l" + str(i)].grid(row=2 * i, column=0, padx=5, pady=5)
                 self["nl" + str(i)] = tkinter.Label(self["helper"], text="Notes", font=("Sans", 20))
-                self["nl" + str(i)].grid(row=2 * (i), column=1, padx=5, pady=5)
+                self["nl" + str(i)].grid(row=2 * i, column=1, padx=5, pady=5)
                 self["e" + str(i)] = tkinter.Entry(self["helper"], font=("Sans", 20))
                 self["e" + str(i)].grid(row=2 * i + 1, column=0, padx=5, pady=5)
                 self["ne" + str(i)] = tkinter.Entry(self["helper"], font=("Sans", 20))
                 self["ne" + str(i)].grid(row=2 * i + 1, column=1, padx=5, pady=5)
-            self["previous"] = tkinter.Button(self.tk, text="< Previous")
+                if criteria in self.current_question.coding_done:
+                    self["e" + str(i)].insert(0, self.current_question.coding_done[criteria].text)
+                    self["ne" + str(i)].insert(0, self.current_question.coding_done[criteria].notes)
+            self["previous"] = tkinter.Button(self.tk, text="< Previous", command=self.previous_question)
             self["previous"].grid(row=2, column=0, padx=5, pady=5, ipadx=15)
-            self["next"] = tkinter.Button(self.tk, text="Next >", command=self.__cleanup_answer_question)
+            self["next"] = tkinter.Button(self.tk, text="Next >", command=self.next_question)
             self["next"].grid(row=2, column=1, padx=5, pady=5, ipadx=15)
+            self["next_new"] = tkinter.Button(self.tk, text="Next New >|", command=self.next_new_question)
+            self["next_new"].grid(row=2, column=2, padx=5, pady=5, ipadx=15)
 
             self.logger.debug("Question shown")
 
-    def __cleanup_answer_question(self):
-        done = True
+    def next_question(self):
+        self.__cleanup_answer_question()
+        self.show_question("next")
 
+    def previous_question(self):
+        self.__cleanup_answer_question()
+        self.show_question("previous")
+
+    def next_new_question(self):
+        self.__cleanup_answer_question()
+        self.show_question("next_new")
+
+    def __cleanup_answer_question(self):
         for element in self:
             if element[0] == "e":
                 content = self[element].get()
                 if content is "":
-                    done = False
                     self[element].config(bg="#ffe0e0")
                 else:
                     self[element].config(bg="#e0ffe0")
                     index = int(element[1:])
-                    self.current_question[self.current_question.criterias[index]] = content
+                    self.current_question.set_value(criteria=self.current_question.criterias[index],
+                                                    value=content,
+                                                    notes=self["ne{}".format(str(index))].get())
 
-        if done:
-            for i in self:
-                self[i].destroy()
-            self.widgets = {}
-            self.show_question()
+        for i in self:
+            self[i].destroy()
+        self.widgets = {}
 
     def run(self):
         self.logger.debug("Starting GUI")
@@ -230,9 +252,9 @@ class GUIPresenter(AbstractPresenter):
     @staticmethod
     def focus_next_window(event):
         event.widget.tk_focusNext().focus()
-        return ("break")
+        return "break"
 
-    def feedback_file_correctness(self, label, filename):
+    def feedback_file_correctness(self, filename):
         if os.path.isfile(filename):
             self["edata"].config(highlightbackground="GREEN")
             return True
