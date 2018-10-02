@@ -295,11 +295,11 @@ class Project(object):
             for coding in session.query(Coding)\
                 .filter(Coding.time_created < answer.codings[0].time_created)\
                 .order_by(Coding.time_created.desc()):
-                if not coding.answer is answer:
+                if not coding.answer.id == answer.id:
                     return self.build_current_coding_unit(coding.answer,session)
         else:
             for coding in session.query(Coding).order_by(Coding.time_created.desc()):
-                if not coding.answer is answer:
+                if not coding.answer.id == answer.id:
                     return self.build_current_coding_unit(coding.answer,session)
         return self.current_coding_unit
 
@@ -310,7 +310,7 @@ class Project(object):
             for coding in session.query(Coding) \
                 .filter(Coding.time_created > answer.codings[0].time_created) \
                 .order_by(Coding.time_created):
-                if not coding.answer is answer:
+                if not coding.answer.id == answer.id:
                     return self.build_current_coding_unit(coding.answer, session)
         return self.next_new()
 
