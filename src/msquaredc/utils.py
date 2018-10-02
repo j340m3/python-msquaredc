@@ -1,3 +1,4 @@
+import logging
 import os
 import threading
 
@@ -184,3 +185,36 @@ def lcs(a, b):
             x -= 1
             y -= 1
     return result
+
+def match_lists(source, dest, max_error=0.5):
+    if set(dest) in set(source):
+        return {i:i for i in dest}
+    else:
+        logger = logging.getLogger(__name__)
+        logger.info("Mismatch between config and datafile. Try to match questions.")
+        scoredict = {}
+        bestdict = {i:0 for i in dest}
+        seconddict = {}
+        res = {}
+        for candidate in dest:
+            for entry in source:
+                score = 1.0 * len(lcs(entry, candidate)) / len(candidate) * min(len(entry), len(candidate)) / max(
+                    len(entry), len(candidate))
+                if score not in scoredict:
+                    scoredict[score] = []
+                scoredict[score].append((candidate,entry))
+        for best_key in reversed(sorted(scoredict.keys())):
+            best_matches = scoredict[best_key]
+            for candidate, entry in best_matches:
+                if candidate not in res and entry not in res.values():
+                    res[candidate] = entry
+                    bestdict[candidate] = best_key
+                else:
+                    if candidate not in seconddict and entry not in res.values():
+                        seconddict[candidate] = best_key
+        for key in seconddict:
+            error = 1.0*seconddict[key]/bestdict[key]
+            if error > max_error:
+                raise Exception("Too high error probability ({}) while matching {} onto {}.\nCritical entry: {}".format(error,source,dest,key))
+        logger.info("Matching successful. Overall probability of correctness: {}".format(sum(bestdict.values())/len(bestdict.values())))
+        return res
