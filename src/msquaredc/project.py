@@ -133,7 +133,7 @@ class Project(object):
             with session.no_autoflush:
                 # Match all
                 questions = set([i.text for i in session.query(Question)])
-                translation = match_lists(titles,questions)
+                translation = match_lists(titles, questions)
                 user_data = titles - set(translation.values())
                 for user in data:
                     # TODO: get_user muss noch alle antworten Checken.
