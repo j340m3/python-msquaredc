@@ -131,7 +131,7 @@ class Project(object):
             with session.no_autoflush:
                 # Match all
                 questions = set([i.text for i in session.query(Question)])
-                translation = match_lists(titles,questions)
+                translation = match_lists(titles, questions)
                 user_data = titles - set(translation.values())
                 for user in data:
                     # TODO: get_user muss noch alle antworten Checken.
@@ -144,18 +144,19 @@ class Project(object):
         else:
             raise Exception("Check your separator!")
 
-    def match(self,list,candidate):
+    def match(self, list, candidate):
         if candidate in list:
             return candidate
         else:
             self.logger.info("Didn't match at first try. Attempting smart match.")
-            candidate=candidate.strip().lstrip()
+            candidate = candidate.strip().lstrip()
             best = 0
             second = 0
             best_match = None
             sum_score = 0
             for entry in list:
-                score = 1.0*len(lcs(entry,candidate))/len(candidate)*min(len(entry),len(candidate))/max(len(entry),len(candidate))
+                score = 1.0*len(lcs(entry,candidate))/len(candidate)*min(len(entry), len(candidate))\
+                        /max(len(entry), len(candidate))
                 sum_score += score
                 if score > second:
                     if score > best:
@@ -164,10 +165,13 @@ class Project(object):
                     else:
                         second = score
             if best > 3*second:
-                self.logger.info("Could match {} onto {} from {} with probability {}.".format(candidate,best_match,list,second/best))
+                self.logger.info("Could match {} onto {} from {} with probability {}."
+                                 .format(candidate, best_match, list, second/best))
                 return best_match
             else:
-                raise Exception("Couldn't match {} onto {}. Best guess: {}, with probability {}. Error probability at {}.".format(candidate,list, best_match, best, second/best))
+                raise Exception("Couldn't match {} onto {}. "
+                                "Best guess: {}, with probability {}. Error probability at {}."
+                                .format(candidate, list, best_match, best, second/best))
 
     @staticmethod
     def get_user(session, facts, answers=None):

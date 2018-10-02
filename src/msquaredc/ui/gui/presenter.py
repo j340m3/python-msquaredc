@@ -209,7 +209,9 @@ class GUIPresenter(AbstractPresenter):
                 else:
                     self[element].config(bg="#e0ffe0")
                     index = int(element[1:])
-                    self.current_question.set_value(criteria=self.current_question.criterias[index], value=content, notes=self["ne{}".format(str(index))].get())
+                    self.current_question.set_value(criteria=self.current_question.criterias[index],
+                                                    value=content,
+                                                    notes=self["ne{}".format(str(index))].get())
 
         if done:
             for i in self:
