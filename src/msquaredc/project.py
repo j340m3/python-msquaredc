@@ -2,7 +2,7 @@ import logging
 import os
 
 import yaml
-from sqlalchemy import Column, create_engine, ForeignKey, func, Integer, PickleType, String
+from sqlalchemy import Column, create_engine, DateTime, ForeignKey, func, Integer, PickleType, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
@@ -49,6 +49,8 @@ class Coding(Base):
     criteria_id = Column(Integer, ForeignKey('criteria.id'), nullable=False)
     criteria = relationship("Criteria", back_populates="codings")
     coder = Column(String)
+    time_created = Column(DateTime(timezone=True), server_default=func.now())
+    time_updated = Column(DateTime(timezone=True), onupdate=func.now())
 
 
 class User(Base):
