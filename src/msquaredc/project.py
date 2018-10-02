@@ -214,6 +214,20 @@ class Project(object):
         return c
 
     @staticmethod
+    def get_coding(session, answer, criteria, coder, text, notes):
+        c_all = session.query(Coding).filter_by(answer=answer, criteria=criteria, coder=coder).all()
+        if len(c_all) > 1:
+            raise Exception("Found duplicate coding for criteria \"{}\" of the answer \"{}\" with ids {}"
+                            .format(criteria.text, answer.text, ", ".join([c.id for c in c_all])))
+        elif len(c_all) == 1:
+            # Na bravo. Passt doch. Evtl success loggen
+            c = c_all[0]
+        else:
+            c = Coding(answer=answer, criteria=criteria, text=text, notes=notes, coder=coder)
+            session.add(c)
+        return c
+
+    @staticmethod
     def get_answer(session, text, question, user):
         a_all = session.query(Answer).filter_by(text=text, question=question, user=user).all()
         if len(a_all) > 1:
@@ -250,13 +264,19 @@ class Project(object):
     def __iter__(self):
         return self
 
-    def __next__(self):
+    def coding_is_finished(self, coding):
+        session = self.Session()
+        done = len(coding.answer.codings)
+        todo = session.query(Criteria).filter_by(question=coding.answer.question).count()
+        return done == todo
+
+    def next_new(self):
         if self.current_coding_unit is not None:
             if not self.current_coding_unit.isFinished():
                 return self.current_coding_unit
         session = self.Session()
         for question in session.query(Question):
-            criterias = list(session.query(Criteria).filter_by(question=question))
+            criterias = question.criterias
             # TODO: Adapt for other databases
             for answer in session.query(Answer).filter_by(question=question).order_by(func.random()):
                 amount_of_codings_relevant = session.query(Coding).filter_by(answer=answer, coder=self.coder).count()
@@ -265,13 +285,56 @@ class Project(object):
                         "Too many codings found, more than one for each coding necessary.\n {}"
                         .format("\n".join(session.query(Coding).filter_by(answer=answer, coder=self.coder))))
                 elif amount_of_codings_relevant < len(criterias):
-                    coding_done = []
-                    for coding in session.query(Coding).filter_by(answer=answer, coder=self.coder):
-                        if coding.text:
-                            coding_done.append(coding.criteria)
-                    self.current_coding_unit = CodingUnit(self, question, answer, criterias, coding_done, session)
-                    return self.current_coding_unit
+                    return self.build_current_coding_unit(answer,session)
         raise StopIteration
+
+    def previous(self):
+        session = self.Session()
+        answer = self.current_coding_unit.answer
+        if len(answer.codings):
+            for coding in session.query(Coding)\
+                .filter(Coding.time_created < answer.codings[0].time_created)\
+                .order_by(Coding.time_created.desc()):
+                if not coding.answer is answer:
+                    return self.build_current_coding_unit(coding.answer,session)
+        else:
+            for coding in session.query(Coding).order_by(Coding.time_created.desc()):
+                if not coding.answer is answer:
+                    return self.build_current_coding_unit(coding.answer,session)
+        return self.current_coding_unit
+
+    def next(self):
+        session = self.Session()
+        answer = self.current_coding_unit.answer
+        if len(answer.codings):
+            for coding in session.query(Coding) \
+                .filter(Coding.time_created > answer.codings[0].time_created) \
+                .order_by(Coding.time_created):
+                if not coding.answer is answer:
+                    return self.build_current_coding_unit(coding.answer, session)
+        return self.next_new()
+
+    def resume(self):
+        session = self.Session()
+        last_updated = session.query(Coding).filter(Coding.time_updated.isnot(None)).order_by(
+            Coding.time_updated.desc()).first()
+        last_created = session.query(Coding).order_by(Coding.time_updated.desc()).first()
+        if last_created:
+            if last_updated:
+                if last_updated.time_updated > last_created.time_created:
+                    if not self.coding_is_finished(last_updated):
+                        return self.build_current_coding_unit(last_updated.answer, session)
+            if not self.coding_is_finished(last_created):
+                return self.build_current_coding_unit(last_created.answer, session)
+        return self.next_new()
+
+    def build_current_coding_unit(self,answer,session):
+        coding_done = {}
+        for coding in session.query(Coding).filter_by(answer=answer, coder=self.coder):
+            if coding.text:
+                coding_done[coding.criteria]=coding
+        self.current_coding_unit = CodingUnit(self, answer.question, answer, answer.question.criterias, coding_done, session)
+        return self.current_coding_unit
 
     def export(self, filename="out.csv"):
         with open(os.path.join(self.path, filename), "w") as file:
@@ -311,9 +374,8 @@ class CodingUnit(object):
         return res
 
     def set_value(self, criteria, value, notes):
-        self.coding_answers[criteria.text] = Coding(text=value, answer=self.answer, criteria=criteria,
+        self.coding_answers[criteria.text] = Project.get_coding(session=self.session, text=value, answer=self.answer, criteria=criteria,
                                                     coder=self.project.coder, notes=notes)
-        self.session.add(self.coding_answers[criteria.text])
         self.session.commit()
 
     def __repr__(self):
