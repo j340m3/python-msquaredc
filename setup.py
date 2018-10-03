@@ -92,7 +92,7 @@ setup(
         'urwid',
         'six',
         'future',
-        'sqlalchemy',
+        'SQLAlchemy',
     ],
     extras_require={
         # eg:
