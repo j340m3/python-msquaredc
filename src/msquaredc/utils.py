@@ -1,3 +1,4 @@
+import logging
 import os
 import threading
 
@@ -58,7 +59,7 @@ class PersistableStack(object):
         self.values = None
         self.multithreading = multithreading
 
-    def getValues(self):
+    def get_values(self):
         res = yaml_load(self.filename)
         if res is not None:
             self.values = res
@@ -67,13 +68,13 @@ class PersistableStack(object):
 
     def push(self, element):
         if not self.values:
-            self.getValues()
+            self.get_values()
         self.values.append(element)
         self.persist(yaml_write, self.values, self.filename)
 
     def pop(self):
         if not self.values:
-            self.getValues()
+            self.get_values()
         res = self.values.pop()
         self.persist(yaml_write, self.values, self.filename)
         return res
@@ -93,22 +94,22 @@ class PersistableStack(object):
 
 
 class Decorator:
-    def __new__(self, *args, **kwargs):
-        self.decoree = None
-        self.newargs = args
-        self.newkwargs = kwargs
-        self.decorators = {}
-        if "decorators" in self.newkwargs:
-            self.decorators = self.newkwargs["decorators"]
+    def __new__(cls, *args, **kwargs):
+        cls.decoree = None
+        cls.newargs = args
+        cls.newkwargs = kwargs
+        cls.decorators = {}
+        if "decorators" in cls.newkwargs:
+            cls.decorators = cls.newkwargs["decorators"]
         if args:
             if isinstance(args[0], type):
-                self.decoree = args[0]
+                cls.decoree = args[0]
             if callable(args[0]):
                 if len(args) == 1 and len(kwargs) == 0:
                     return args[0]
             else:
                 pass
-        return self
+        return cls
 
     def __init__(self, *args, **kwargs):
         self.decoree = None
@@ -141,6 +142,7 @@ class Decorator:
                 self.__instance = cls(*args, **kwargs)
 
             """This is the overwritten class"""
+
             def __getattribute__(self, attr_name):
                 if attr_name == "__class__":
                     return cls
@@ -162,7 +164,7 @@ class Decorator:
 
 
 def lcs(a, b):
-    lengths = [[0 for j in range(len(b) + 1)] for i in range(len(a) + 1)]
+    lengths = [[0 for _ in range(len(b) + 1)] for _ in range(len(a) + 1)]
     # row 0 and column 0 are initialized to 0 already
     for i, x in enumerate(a):
         for j, y in enumerate(b):
@@ -184,3 +186,41 @@ def lcs(a, b):
             x -= 1
             y -= 1
     return result
+
+
+def match_lists(source, dest, max_error=0.5):
+    if set(dest) in set(source):
+        return {i: i for i in dest}
+    else:
+        logger = logging.getLogger(__name__)
+        logger.info("Mismatch between config and datafile. Try to match questions.")
+        scoredict = {}
+        bestdict = {i: 0 for i in dest}
+        seconddict = {}
+        res = {}
+        for candidate in dest:
+            for entry in source:
+                score = 1.0 * len(lcs(entry, candidate)) / len(candidate) * min(len(entry), len(candidate)) / max(
+                    len(entry), len(candidate))
+                if score not in scoredict:
+                    scoredict[score] = []
+                scoredict[score].append((candidate, entry))
+        for best_key in reversed(sorted(scoredict.keys())):
+            best_matches = scoredict[best_key]
+            for candidate, entry in best_matches:
+                if candidate not in res and entry not in res.values():
+                    res[candidate] = entry
+                    bestdict[candidate] = best_key
+                else:
+                    if candidate not in seconddict and entry not in res.values():
+                        seconddict[candidate] = best_key
+        for key in seconddict:
+            error = 1.0 * seconddict[key] / bestdict[key]
+            if error > max_error:
+                raise Exception(
+                    "Too high error probability ({}) while matching {} onto {}.\nCritical entry: {}".format(error,
+                                                                                                            source,
+                                                                                                            dest, key))
+        logger.info("Matching successful. Overall probability of correctness: {}".format(
+            sum(bestdict.values()) / len(bestdict.values())))
+        return res
